@@ -31,7 +31,8 @@ public class ResourceSyncImport {
   }
 
   public ResourceSyncReport filterAndImport(String capabilityListUri, String userSpecifiedDataSet, boolean update,
-                                            String authString, ImportManager importManager, Date lastUpdate)
+                                            String authString, ImportManager importManager, Date lastUpdate,
+                                            String baseUri, String defaultGraph)
     throws CantDetermineDataSetException, IOException, CantRetrieveFileException {
     List<RemoteFile> filesToImport;
 
@@ -64,14 +65,13 @@ public class ResourceSyncImport {
         if (importManager.isRdfTypeSupported(parsedMediatype)) {
           resourceSyncReport.importedFiles.add(file.getUrl());
           // TODO: toevoegen aan ImportManager.addlog
-          Future<ImportStatus> importedFileFuture = importManager.addLog();
-          //   dataSet.getMetadata().getBaseUri(),
-          //   dataSet.getMetadata().getBaseUri(),
-          //   file.getUrl().substring(file.getUrl().lastIndexOf('/') + 1),
-          //   file.getData().get(),
-          //   Optional.of(Charsets.UTF_8),
-          //   parsedMediatype
-          // );
+          Future<ImportStatus> importedFileFuture = importManager.addLog(
+            baseUri, defaultGraph,
+            file.getUrl().substring(file.getUrl().lastIndexOf('/') + 1),
+            file.getData().get(),
+            Optional.of(Charsets.UTF_8),
+            parsedMediatype
+          );
           //TODO: Make synchronous import more efficient
           //Currently synchronous import is to be used only for testing purposes.
           if (!async) {
@@ -97,6 +97,7 @@ public class ResourceSyncImport {
     throws CantDetermineDataSetException,
     IOException,
     CantRetrieveFileException {
+    System.out.println("filter: " + update);
     try {
       RemoteFilesList remoteFilesList = resourceSyncFileLoader.getRemoteFilesList(capabilityListUri, authString);
 
@@ -106,15 +107,20 @@ public class ResourceSyncImport {
         if (update) {
 
           for (RemoteFile remoteFile : remoteFilesList.getChangeList()) {
+            System.out.println("iterate changeList");
             if (remoteFile.getMetadata().getDateTime().after(lastUpdate)) {
+              System.out.println("date after!");
               resources.add(remoteFile);
+            } else {
+              System.out.println("NOT date after!");
             }
           }
 
         } else {
+          System.out.println("update==false");
           resources.addAll(remoteFilesList.getChangeList());
         }
-
+        System.out.println("aantal resources: " + resources.size());
         return resources;
       }
 
@@ -141,6 +147,7 @@ public class ResourceSyncImport {
 
   private List<RemoteFile> filter(String capabilityListUri, String userSpecifiedDataSet, String authString)
     throws CantRetrieveFileException {
+    System.out.println("filter 2");
     try {
       RemoteFilesList remoteFilesList = resourceSyncFileLoader.getRemoteFilesList(capabilityListUri, authString);
 

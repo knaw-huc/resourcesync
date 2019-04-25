@@ -14,6 +14,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.jena.base.Sys;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayInputStream;
@@ -94,17 +95,24 @@ public class ResourceSyncFileLoader {
 
   public RemoteFilesList getRemoteFilesList(String capabilityListUri, String authString)
     throws IOException, CantRetrieveFileException {
+    System.out.println("getRemoteFilesList");
     List<UrlItem> capabilityList = getRsFile(capabilityListUri, authString).getItemList();
+    System.out.println("na getRsFile");
 
     List<RemoteFile> changes = new ArrayList<>();
     List<RemoteFile> resources = new ArrayList<>();
 
+    System.out.println("aantal capabilitylist items: " + capabilityList.size());
     for (UrlItem capabilityListItem : capabilityList) {
       if (capabilityListItem.getMetadata().getCapability().equals(Capability.CHANGELIST.getXmlValue())) {
+        System.out.println("voor getRsFile");
         UrlSet rsFile = getRsFile(capabilityListItem.getLoc(), authString);
+        System.out.println("na getRsFile");
 
         String changeListExtension = ".*.nqud";
 
+        int teller = 0;
+        System.out.println("aantal changelist items: " + rsFile.getItemList().size());
         for (UrlItem changeListItem : rsFile.getItemList()) {
           RsLn changeLink = changeListItem.getLink();
           if (changeLink != null) {
@@ -117,12 +125,14 @@ public class ResourceSyncFileLoader {
               RemoteFile remoteFile = getRemoteFile(new Tuple<>(changeLink.getHref(), changeMd),
                 authString);
               changes.add(remoteFile);
+              System.out.println("added remote file (" + (++teller) + ")");
             }
           }
         }
       } else if (capabilityListItem.getMetadata().getCapability().equals(Capability.RESOURCELIST.getXmlValue())) {
         UrlSet rsFile = getRsFile(capabilityListItem.getLoc(), authString);
 
+        System.out.println("aantal resourcelist items: " + rsFile.getItemList().size());
         for (UrlItem resourceListItem : rsFile.getItemList()) {
           if (MIME_TYPE_FOR_EXTENSION.values().contains(resourceListItem.getMetadata().getMimeType()) ||
             SupportedRdfResourceListExtensions.createFromFile(resourceListItem.getLoc()) != null) {
@@ -130,9 +140,10 @@ public class ResourceSyncFileLoader {
               authString));
           }
         }
+        System.out.println("eind resourcelist");
       }
     }
-
+    System.out.println("einde getRemoteFilesList");
     return new RemoteFilesList(changes, resources);
   }
 
@@ -183,6 +194,8 @@ public class ResourceSyncFileLoader {
     }
 
     public static SupportedRdfResourceListExtensions createFromFile(String fileName) {
+      System.out.println("createFromFile");
+      System.out.println("aantal values: " + SupportedRdfResourceListExtensions.values().length);
       for (SupportedRdfResourceListExtensions rdfExtensions : SupportedRdfResourceListExtensions.values()) {
         if (fileName.endsWith("." + rdfExtensions.getExtension())) {
           return rdfExtensions;
@@ -223,13 +236,16 @@ public class ResourceSyncFileLoader {
 
     public InputStream getFile(String url, String authString) throws CantRetrieveFileException, IOException {
       HttpGet httpGet = new HttpGet(url);
+      System.out.println("getFile - url: " + url);
 
       /*Timeout time is set to 100seconds to prevent socket timeout during changelist import*/
-      httpGet.setConfig(RequestConfig.custom().setSocketTimeout(100000).build());
+      httpGet.setConfig(RequestConfig.custom().setSocketTimeout(1000).build());
       if (authString != null) {
         httpGet.addHeader("Authorization", authString);
       }
+      System.out.println("voor httpResponse");
       HttpResponse httpResponse = httpClient.execute(httpGet);
+      System.out.println("erna: " + httpResponse);
       if (httpResponse.getStatusLine().getStatusCode() == 200) {
         InputStream content = httpResponse.getEntity().getContent();
         if (content != null) {

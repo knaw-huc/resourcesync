@@ -899,32 +899,32 @@
         </activation>
         <build>
           <plugins>
-            <plugin>
-              <artifactId>maven-assembly-plugin</artifactId>
-              <executions>
-                <execution>
-                  <id>make-assembly kabara</id> <!-- this is used for inheritance merges -->
-                  <phase>package</phase> <!-- bind to the packaging phase -->
-                  <goals>
-                    <goal>single</goal>
-                  </goals>
-                  <configuration>
-                    <archive>
-                      <manifest>
-                        <!-- manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile -->
-                        <mainClass>nl.knaw.huygens.timbuctoo.remote.rs.ResourceSyncService</mainClass>
-                      </manifest>
-                    </archive>
-                    <descriptorRefs>
-                      <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <finalName>resourcesync</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <attach>false</attach>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--              <artifactId>maven-assembly-plugin</artifactId>-->
+<!--              <executions>-->
+<!--                <execution>-->
+<!--                  <id>make-assembly kabara</id> &lt;!&ndash; this is used for inheritance merges &ndash;&gt;-->
+<!--                  <phase>package</phase> &lt;!&ndash; bind to the packaging phase &ndash;&gt;-->
+<!--                  <goals>-->
+<!--                    <goal>single</goal>-->
+<!--                  </goals>-->
+<!--                  <configuration>-->
+<!--                    <archive>-->
+<!--                      <manifest>-->
+<!--                        &lt;!&ndash; manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile &ndash;&gt;-->
+<!--                        <mainClass>nl.knaw.huygens.timbuctoo.remote.rs.ResourceSyncService</mainClass>-->
+<!--                      </manifest>-->
+<!--                    </archive>-->
+<!--                    <descriptorRefs>-->
+<!--                      <descriptorRef>jar-with-dependencies</descriptorRef>-->
+<!--                    </descriptorRefs>-->
+<!--                    <finalName>resourcesync</finalName>-->
+<!--                    <appendAssemblyId>false</appendAssemblyId>-->
+<!--                    <attach>false</attach>-->
+<!--                  </configuration>-->
+<!--                </execution>-->
+<!--              </executions>-->
+<!--            </plugin>-->
           </plugins>
         </build>
       </profile>
