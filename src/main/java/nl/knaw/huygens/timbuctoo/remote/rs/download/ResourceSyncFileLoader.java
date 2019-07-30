@@ -14,13 +14,12 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.jena.base.Sys;
 import org.slf4j.Logger;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +52,16 @@ public class ResourceSyncFileLoader {
   private static final Logger LOG = getLogger(ResourceSyncFileLoader.class);
   private final RemoteFileRetriever remoteFileRetriever;
   private final ObjectMapper objectMapper;
+  private int timeout = 1000;
 
   public ResourceSyncFileLoader(CloseableHttpClient httpClient) {
+    objectMapper = new XmlMapper();
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    remoteFileRetriever = new RemoteFileRetriever(httpClient);
+  }
+
+  public ResourceSyncFileLoader(CloseableHttpClient httpClient, int timeout) {
+    setTimeout(timeout);
     objectMapper = new XmlMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     remoteFileRetriever = new RemoteFileRetriever(httpClient);
@@ -66,11 +73,13 @@ public class ResourceSyncFileLoader {
     this.remoteFileRetriever = remoteFileRetriever;
   }
 
+  public void setTimeout(int timeout) {
+    this.timeout = timeout;
+  }
 
   //FIXME: maybe we should just store everything compressed
   public static InputStream maybeDecompress(InputStream input) throws IOException {
     final PushbackInputStream pb = new PushbackInputStream(input, 2);
-
     int header = pb.read();
     if (header == -1) {
       return pb;
@@ -105,7 +114,7 @@ public class ResourceSyncFileLoader {
     System.out.println("aantal capabilitylist items: " + capabilityList.size());
     for (UrlItem capabilityListItem : capabilityList) {
       if (capabilityListItem.getMetadata().getCapability().equals(Capability.CHANGELIST.getXmlValue())) {
-        System.out.println("voor getRsFile");
+        System.out.println("voor getRsFile: " + capabilityListItem.getLoc());
         UrlSet rsFile = getRsFile(capabilityListItem.getLoc(), authString);
         System.out.println("na getRsFile");
 
@@ -153,7 +162,7 @@ public class ResourceSyncFileLoader {
       item.getLeft(),
       () -> {
         try {
-          return remoteFileRetriever.getFile(item.getLeft(), authString);
+          return remoteFileRetriever.getFile(item.getLeft(), authString, timeout);
         } catch (CantRetrieveFileException e) {
           throw e;
         }
@@ -174,7 +183,7 @@ public class ResourceSyncFileLoader {
 
   private UrlSet getRsFile(String url, String authString) throws IOException, CantRetrieveFileException {
     LOG.info("getRsFile '{}'", url);
-    return objectMapper.readValue(IOUtils.toString(remoteFileRetriever.getFile(url, authString))
+    return objectMapper.readValue(IOUtils.toString(remoteFileRetriever.getFile(url, authString, timeout))
       .replace("rs.md", "rs:md"), UrlSet.class);
   }
 
@@ -234,12 +243,13 @@ public class ResourceSyncFileLoader {
       this.httpClient = httpClient;
     }
 
-    public InputStream getFile(String url, String authString) throws CantRetrieveFileException, IOException {
+    public InputStream getFile(String url, String authString, int timeout)
+      throws CantRetrieveFileException, IOException {
       HttpGet httpGet = new HttpGet(url);
       System.out.println("getFile - url: " + url);
 
       /*Timeout time is set to 100seconds to prevent socket timeout during changelist import*/
-      httpGet.setConfig(RequestConfig.custom().setSocketTimeout(1000).build());
+      httpGet.setConfig(RequestConfig.custom().setSocketTimeout(timeout).build());
       if (authString != null) {
         httpGet.addHeader("Authorization", authString);
       }
