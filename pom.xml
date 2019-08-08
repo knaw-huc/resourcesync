@@ -8,15 +8,15 @@
     <artifactId>resourcesync</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
-    <name>Timbuctoo-instance</name>
-    <description>Back-end software that provides different front-ends to share data and variations on that data.
+    <name>ResourceSync</name>
+    <description>ResourceSync client library
     </description>
     <url>http://repository.huygens.knaw.nl/static/search.html</url>
     <organization>
-      <name>Huygens ING</name>
-      <url>http://www.huygens.knaw.nl/</url>
+      <name>DI-HUC</name>
+      <url>https://huc.knaw.nl</url>
     </organization>
-    <inceptionYear>2012</inceptionYear>
+    <inceptionYear>2019</inceptionYear>
 
     <licenses>
       <license>
@@ -26,70 +26,24 @@
       </license>
     </licenses>
 
-    <issueManagement>
-      <system>Jira</system>
-      <url>http://jira.huygens.knaw.nl/secure/RapidBoard.jspa?rapidView=3</url>
-    </issueManagement>
-
-    <ciManagement>
-      <system>Jenkins</system>
-      <url>http://ci.huygens.knaw.nl/job/timbuctoo_develop</url>
-    </ciManagement>
-
     <developers>
-      <developer>
-        <id>RA</id>
-        <name>René van der Ark</name>
-        <organization>Huygens ING</organization>
-        <organizationUrl>http://www.huygens.knaw.nl</organizationUrl>
-      </developer>
-      <developer>
-        <id>HB</id>
-        <name>Henk van den Berg</name>
-        <organization>DANS</organization>
-        <organizationUrl>https://dans.knaw.nl/</organizationUrl>
-      </developer>
-      <developer>
-        <id>RD</id>
-        <name>Ronald Haentjens Dekker</name>
-        <organization>Huygens ING</organization>
-        <organizationUrl>http://www.huygens.knaw.nl</organizationUrl>
-      </developer>
       <developer>
         <id>MK</id>
         <name>Meindert Kroese</name>
-        <organization>Huygens ING</organization>
-        <organizationUrl>http://www.huygens.knaw.nl</organizationUrl>
-      </developer>
-      <developer>
-        <id>PJ</id>
-        <name>Pratham Joshi</name>
-        <organization>Huygens ING</organization>
-        <organizationUrl>http://www.huygens.knaw.nl</organizationUrl>
+        <organization>DI-HUC</organization>
+        <organizationUrl>https://huc.knaw.nl</organizationUrl>
       </developer>
       <developer>
         <id>MM</id>
         <name>Martijn Maas</name>
-        <organization>Huygens ING</organization>
-        <organizationUrl>http://www.huygens.knaw.nl</organizationUrl>
+        <organization>DI-HUC</organization>
+        <organizationUrl>https://huc.knaw.nl</organizationUrl>
       </developer>
       <developer>
-        <id>KM</id>
-        <name>Kerim Meijer</name>
-        <organization>KNAW Humanities Cluster</organization>
-        <organizationUrl>https://huc.knaw.nl/</organizationUrl>
-      </developer>
-      <developer>
-        <id>JN</id>
-        <name>Jauco Noordzij</name>
-        <organization>Huygens ING</organization>
-        <organizationUrl>http://www.huygens.knaw.nl</organizationUrl>
-      </developer>
-      <developer>
-        <id>WR</id>
-        <name>Walter Ravenek</name>
-        <organization>Huygens ING</organization>
-        <organizationUrl>http://www.huygens.knaw.nl</organizationUrl>
+        <id>MW</id>
+        <name>Menzo Windhouwer</name>
+        <organization>DI-HUC</organization>
+        <organizationUrl>https://huc.knaw.nl</organizationUrl>
       </developer>
     </developers>
 
@@ -139,19 +93,6 @@
     <dependencyManagement>
       <dependencies>
         <dependency>
-          <groupId>io.dropwizard</groupId>
-          <artifactId>dropwizard-bom</artifactId>
-          <version>${dropwizard.version}</version>
-          <type>pom</type>
-          <scope>import</scope>
-          <exclusions>
-            <exclusion>
-              <groupId>com.fasterxml.jackson</groupId>
-              <artifactId>jackson-bom</artifactId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
           <groupId>com.fasterxml.jackson</groupId>
           <artifactId>jackson-bom</artifactId>
           <version>${jackson.version}</version>
@@ -171,153 +112,6 @@
       </dependency>
 
       <!-- ## Main dependencies ## -->
-      <!-- Dropwizard -->
-      <dependency>
-        <groupId>io.dropwizard</groupId>
-        <artifactId>dropwizard-core</artifactId>
-        <version>${dropwizard.version}</version>
-      </dependency>
-      <!--file uploads-->
-      <dependency>
-        <groupId>io.dropwizard</groupId>
-        <artifactId>dropwizard-forms</artifactId>
-        <version>${dropwizard.version}</version>
-      </dependency>
-      <!--make requests to other webservices-->
-      <dependency>
-        <groupId>io.dropwizard</groupId>
-        <artifactId>dropwizard-client</artifactId>
-        <version>${dropwizard.version}</version>
-      </dependency>
-      <!--serve static assets-->
-      <dependency>
-        <groupId>io.dropwizard</groupId>
-        <artifactId>dropwizard-assets</artifactId>
-        <version>${dropwizard.version}</version>
-      </dependency>
-
-
-      <!-- TinkerPop library for support graph databases -->
-      <dependency>
-        <groupId>org.apache.tinkerpop</groupId>
-        <artifactId>gremlin-core</artifactId>
-        <version>${tinkerpop3.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tinkerpop</groupId>
-        <artifactId>neo4j-gremlin</artifactId>
-        <version>${tinkerpop3.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.neo4j</groupId>
-        <artifactId>neo4j-tinkerpop-api-impl</artifactId>
-        <version>${neo4j-tinkerpop-api-impl.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-enterprise</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>com.graphql-java</groupId>
-        <artifactId>graphql-java</artifactId>
-        <version>11.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.sleepycat</groupId>
-        <artifactId>je</artifactId>
-        <version>18.3.12</version>
-      </dependency>
-
-      <!-- ### handle ids ## -->
-      <!-- activeMQ for eventually executing commands on remote services -->
-      <dependency>
-        <groupId>com.kjetland.dropwizard</groupId>
-        <artifactId>dropwizard-activemq</artifactId>
-        <version>${dropwizard-activemq.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-client</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <!-- Activemq broker package contains the in memory version for easy quick run -->
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-broker</artifactId>
-        <version>${activemq.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <!-- Activemq persistence db to make the in-memory broker somewhat production viable-->
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-kahadb-store</artifactId>
-        <version>${activemq.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-
-      <!-- ### RML datasource expression implementation -->
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-jexl3</artifactId>
-        <version>3.1</version>
-      </dependency>
-
-      <!-- ### Uploads file handling ## -->
-      <!-- CSV -->
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-csv</artifactId>
-        <version>1.6</version>
-      </dependency>
-      <!-- Excel -->
-      <dependency>
-        <groupId>org.apache.poi</groupId>
-        <artifactId>poi-ooxml</artifactId>
-        <version>3.14</version>
-      </dependency>
-      <!-- dataperfect -->
-      <dependency>
-        <groupId>com.github.DANS-KNAW</groupId>
-        <artifactId>dans-dp-lib</artifactId>
-        <version>36e6037f4b</version>
-      </dependency>
-      <!-- MS Access -->
-      <dependency>
-        <groupId>com.healthmarketscience.jackcess</groupId>
-        <artifactId>jackcess</artifactId>
-        <version>3.0.0</version>
-      </dependency>
-
-      <!-- ### Search API's ## -->
-      <!-- ElasticSearch REST API -->
-      <dependency>
-        <groupId>org.elasticsearch.client</groupId>
-        <artifactId>rest</artifactId>
-        <version>5.5.3</version>
-      </dependency>
-
-      <!-- ### HTML Parser ## -->
-      <dependency>
-        <groupId>org.jsoup</groupId>
-        <artifactId>jsoup</artifactId>
-        <version>1.11.3</version>
-      </dependency>
 
       <!-- ### Xml indenting ## -->
       <dependency>
@@ -325,31 +119,11 @@
         <artifactId>txw2</artifactId>
         <version>2.3.2</version>
       </dependency>
-
-      <!-- ### Logging and reporting ## -->
-      <!--GELF logback handler for sending logs to a remote log server-->
+      <!-- ### HTML Parser ## -->
       <dependency>
-        <groupId>net.gini.dropwizard</groupId>
-        <artifactId>dropwizard-gelf</artifactId>
-        <version>1.3.7-1</version>
-      </dependency>
-
-      <!--federated auth support -->
-
-      <!--Azure libraries for using azure services when running there -->
-      <dependency>
-        <groupId>com.microsoft.azure</groupId>
-        <artifactId>azure-storage</artifactId>
-        <version>8.0.0</version>
-      </dependency>
-
-
-      <!-- ### RDF ## -->
-      <!-- Apache Jena -->
-      <dependency>
-        <groupId>org.apache.jena</groupId>
-        <artifactId>jena-tdb</artifactId>
-        <version>3.10.0</version>
+        <groupId>org.jsoup</groupId>
+        <artifactId>jsoup</artifactId>
+        <version>1.11.3</version>
       </dependency>
 
       <!-- Rdf4J -->
@@ -357,43 +131,6 @@
         <groupId>org.eclipse.rdf4j</groupId>
         <artifactId>rdf4j-rio-rdfxml</artifactId>
         <version>${rdf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.rdf4j</groupId>
-        <artifactId>rdf4j-rio-turtle</artifactId>
-        <version>${rdf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.rdf4j</groupId>
-        <artifactId>rdf4j-rio-ntriples</artifactId>
-        <version>${rdf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.rdf4j</groupId>
-        <artifactId>rdf4j-rio-trig</artifactId>
-        <version>${rdf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.rdf4j</groupId>
-        <artifactId>rdf4j-rio-n3</artifactId>
-        <version>${rdf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.rdf4j</groupId>
-        <artifactId>rdf4j-rio-nquads</artifactId>
-        <version>${rdf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.rdf4j</groupId>
-        <artifactId>rdf4j-rio-jsonld</artifactId>
-        <version>${rdf4j.version}</version>
-      </dependency>
-
-      <!-- character encoding detection -->
-      <dependency>
-        <groupId>com.googlecode.juniversalchardet</groupId>
-        <artifactId>juniversalchardet</artifactId>
-        <version>1.0.3</version>
       </dependency>
 
       <!-- ### make generating of value types easier -->
@@ -426,162 +163,22 @@
         <artifactId>commons-lang3</artifactId>
         <version>3.8.1</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.5.9</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.6</version>
+      </dependency>
 
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>21.0</version>
-      </dependency>
-
-      <!--Try monad-->
-      <dependency>
-        <groupId>io.vavr</groupId>
-        <artifactId>vavr</artifactId>
-        <version>${vavr.version}</version>
-      </dependency>
-
-      <!-- Java implementation of Json-ld specification -->
-      <dependency>
-        <groupId>com.github.jsonld-java</groupId>
-        <artifactId>jsonld-java</artifactId>
-        <version>0.12.3</version>
-      </dependency>
-
-      <!-- Twitter-4j oauth for twitter -->
-      <dependency>
-        <groupId>org.twitter4j</groupId>
-        <artifactId>twitter4j-core</artifactId>
-        <version>4.0.7</version>
-      </dependency>
-
-      <!-- Bit.ly java client -->
-      <dependency>
-        <groupId>net.swisstech</groupId>
-        <artifactId>bitly-api-client</artifactId>
-        <version>0.8.0</version>
-      </dependency>
-
-      <!-- gson used in TestableTinkerPopGraphManager -->
-      <dependency>
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>2.8.5</version>
-      </dependency>
-
-      <!-- ## End of main dependencies ## -->
-
-      <!-- ## Test dependencies ## -->
-      <!-- Hamcrest dependency should be on top see http://stackoverflow.com/a/16735373 -->
-      <!-- Hamcrest library -->
-      <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-library</artifactId>
-        <version>${hamcrest-library.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <!-- Hamcrest matchers for streams, optionals, etc. -->
-      <dependency>
-        <groupId>co.unruly</groupId>
-        <artifactId>java-8-matchers</artifactId>
-        <version>1.6</version>
-        <scope>test</scope>
-      </dependency>
-
-
-      <!-- Dropwizard test dependencies -->
-      <dependency>
-        <groupId>io.dropwizard</groupId>
-        <artifactId>dropwizard-testing</artifactId>
-        <version>${dropwizard.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <!-- JUnit -->
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <!--explicitly include neo4j in the tests for integration tests-->
-      <dependency>
-        <groupId>org.neo4j</groupId>
-        <artifactId>neo4j-kernel</artifactId>
-        <version>${neo4j.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.neo4j</groupId>
-        <artifactId>neo4j-io</artifactId>
-        <version>${neo4j.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.neo4j</groupId>
-        <artifactId>neo4j-ha</artifactId>
-        <version>${neo4j.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-security-enterprise</artifactId> <!-- has a conflicting slf4j binder -->
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.neo4j</groupId>
-        <artifactId>neo4j-slf4j</artifactId>
-        <version>${neo4j.version}</version>
-      </dependency>
-
-      <!--hamcrest matcher for asserting json -->
-      <dependency>
-        <groupId>uk.co.datumedge</groupId>
-        <artifactId>hamcrest-json</artifactId>
-        <version>0.2</version>
-      </dependency>
-
-      <!-- Mockito mocking framework -->
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>${mockito.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <!-- mockserver (with bad SAXParser) -->
-      <dependency>
-        <groupId>org.mock-server</groupId>
-        <artifactId>mockserver-netty</artifactId>
-        <version>5.5.1</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <!-- A library to help validating xml documents -->
-      <dependency>
-        <groupId>org.xmlunit</groupId>
-        <artifactId>xmlunit-core</artifactId>
-        <version>${xmlunit.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.xmlunit</groupId>
-        <artifactId>xmlunit-matchers</artifactId>
-        <version>${xmlunit.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.google.code.findbugs</groupId>
-        <artifactId>annotations</artifactId>
-        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
@@ -589,11 +186,41 @@
         <version>3.0.2</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
-        <version>4.5.1</version>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>1.3.2</version>
       </dependency>
-      <!-- ## End of test dependencies ## -->
+      <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>javax.ws.rs-api</artifactId>
+        <version>2.1.1</version>
+      </dependency>
+      <dependency>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>com.springsource.javax.xml.bind</artifactId>
+          <version>2.2.0</version>
+          <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.7.26</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.rdf4j</groupId>
+        <artifactId>rdf4j-model</artifactId>
+        <version>2.5.3</version>
+      </dependency>
+
+     <dependency>
+        <groupId>com.graphql-java</groupId>
+        <artifactId>graphql-java</artifactId>
+        <version>11.0</version>
+      </dependency>
+
+      <!-- ## End of main dependencies ## -->
+
     </dependencies>
 
     <repositories>
@@ -620,20 +247,6 @@
         <id>oracle</id>
         <url>http://download.oracle.com/maven/</url>
       </repository>
-      <!-- repository>
-        <id>Huygens</id>
-        <url>http://maven.huygens.knaw.nl/repository/</url>
-        <releases>
-          <enabled>true</enabled>
-          <updatePolicy>always</updatePolicy>
-          <checksumPolicy>warn</checksumPolicy>
-        </releases>
-        <snapshots>
-          <enabled>true</enabled>
-          <updatePolicy>always</updatePolicy>
-          <checksumPolicy>fail</checksumPolicy>
-        </snapshots>
-      </repository -->
       <repository>
         <id>mbknor</id>
         <name>mbknor</name>
