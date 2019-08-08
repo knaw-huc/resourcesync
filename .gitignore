@@ -1,25 +1,13 @@
-/reports
-/*/target
-.classpath
-.settings
-.project
-/timbuctoo-instancev4/generated-sources
+# vim
+*.swp
 
 # intellij files and folders
 *.iml
 .idea
 
-# debug run state (database, known users, authorizations)
-/timbuctoo-instancev4/temp_for_debugrun
+# java maven
+classes/
+dependency-reduced-pom.xml
+out/
+target/
 
-/documentation/output
-
-# floobits workspace sharing tool
-.floo
-.flooignore
-
-/devtools/run-with-services/database
-/devtools/run-with-services/auth
-
-# bazel symlinks
-/bazel-*
