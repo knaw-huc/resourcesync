@@ -26,6 +26,20 @@
       </license>
     </licenses>
 
+    <distributionManagement>
+      <repository>
+        <id>maven.huygens</id>
+        <name>Huygens Maven Repository</name>
+        <url>${huygens-repo}</url>
+      </repository>
+      <snapshotRepository>
+        <id>maven.huygens.snapshot</id>
+        <name>Huygens Maven Snapshot Repository</name>
+        <url>${huygens-repo}</url>
+        <uniqueVersion>false</uniqueVersion>
+      </snapshotRepository>
+    </distributionManagement>
+
     <developers>
       <developer>
         <id>MK</id>
