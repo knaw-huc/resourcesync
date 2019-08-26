@@ -116,8 +116,8 @@
       </dependencies>
     </dependencyManagement>
 
-    <dependencies>
 
+    <dependencies>
       <!-- list checkstyle so the bazel build also downloads it -->
       <dependency>
         <groupId>com.puppycrawl.tools</groupId>
@@ -279,6 +279,14 @@
 
 
     <build>
+    <extensions>
+        <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>3.3.3</version>
+        </extension>
+    </extensions>
+
       <plugins>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
@@ -515,46 +523,5 @@
 </plugin>
       </plugins>
     </build>
-
-    <profiles>
-      <profile>
-        <id>makeIndex</id>
-        <activation>
-          <os>
-            <family>unix</family>
-          </os>
-        </activation>
-        <build>
-          <plugins>
-<!--            <plugin>-->
-<!--              <artifactId>maven-assembly-plugin</artifactId>-->
-<!--              <executions>-->
-<!--                <execution>-->
-<!--                  <id>make-assembly kabara</id> &lt;!&ndash; this is used for inheritance merges &ndash;&gt;-->
-<!--                  <phase>package</phase> &lt;!&ndash; bind to the packaging phase &ndash;&gt;-->
-<!--                  <goals>-->
-<!--                    <goal>single</goal>-->
-<!--                  </goals>-->
-<!--                  <configuration>-->
-<!--                    <archive>-->
-<!--                      <manifest>-->
-<!--                        &lt;!&ndash; manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile &ndash;&gt;-->
-<!--                        <mainClass>nl.knaw.huygens.timbuctoo.remote.rs.ResourceSyncService</mainClass>-->
-<!--                      </manifest>-->
-<!--                    </archive>-->
-<!--                    <descriptorRefs>-->
-<!--                      <descriptorRef>jar-with-dependencies</descriptorRef>-->
-<!--                    </descriptorRefs>-->
-<!--                    <finalName>resourcesync</finalName>-->
-<!--                    <appendAssemblyId>false</appendAssemblyId>-->
-<!--                    <attach>false</attach>-->
-<!--                  </configuration>-->
-<!--                </execution>-->
-<!--              </executions>-->
-<!--            </plugin>-->
-          </plugins>
-        </build>
-      </profile>
-    </profiles>
 
   </project>
