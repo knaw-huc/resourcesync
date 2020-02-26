@@ -1,5 +1,14 @@
+<<<<<<< HEAD
 # vim
 *.swp
+=======
+/reports
+/target
+.classpath
+.settings
+.project
+/timbuctoo-instancev4/generated-sources
+>>>>>>> Fix dependency resolving.
 
 # intellij files and folders
 *.iml
