@@ -4,12 +4,8 @@ import nl.knaw.huygens.timbuctoo.remote.rs.xml.RsLn;
 
 import java.net.URI;
 
-/**
- * Created on 2017-10-24 13:14.
- */
 public class Description {
-
-  private String rawContent;
+  private final String rawContent;
   private URI describes;
   private RsLn describedByLink;
 
@@ -36,5 +32,4 @@ public class Description {
   void setDescribedByLink(RsLn describedByLink) {
     this.describedByLink = describedByLink;
   }
-
 }

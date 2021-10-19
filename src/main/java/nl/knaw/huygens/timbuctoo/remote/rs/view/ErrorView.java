@@ -1,10 +1,6 @@
 package nl.knaw.huygens.timbuctoo.remote.rs.view;
 
-/**
- *
- */
 public class ErrorView {
-
   private String exception;
 
   public ErrorView(Throwable error) {

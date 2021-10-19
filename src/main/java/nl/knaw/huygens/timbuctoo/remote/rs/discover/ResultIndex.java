@@ -1,6 +1,5 @@
 package nl.knaw.huygens.timbuctoo.remote.rs.discover;
 
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -12,9 +11,8 @@ import java.util.TreeSet;
  * An index on explored URI's and their Result.
  */
 public class ResultIndex {
-
-  private Map<URI, Result<?>> resultMap = new HashMap<>();
-  private Set<String> invalidUris = new TreeSet<>();
+  private final Map<URI, Result<?>> resultMap = new HashMap<>();
+  private final Set<String> invalidUris = new TreeSet<>();
   private int count;
 
   public boolean contains(URI uri) {
@@ -85,5 +83,4 @@ public class ResultIndex {
     count++;
     invalidUris.add(invalid);
   }
-
 }

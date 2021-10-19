@@ -7,25 +7,25 @@ import com.google.common.collect.ImmutableMap;
 import nl.knaw.huygens.timbuctoo.remote.rs.download.exceptions.CantRetrieveFileException;
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.Capability;
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.RsLn;
-import nl.knaw.huygens.timbuctoo.util.Tuple;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import static nl.knaw.huygens.timbuctoo.util.Tuple.tuple;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -36,7 +36,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * before returning a timeout to limit the amount of failures.
  */
 public class ResourceSyncFileLoader {
-
+  private static final Logger LOG = getLogger(ResourceSyncFileLoader.class);
   private static final Map<String, String> MIME_TYPE_FOR_EXTENSION = ImmutableMap.<String, String>builder()
     .put("ttl", "text/turtle")
     .put("rdf", "application/rdf+xml")
@@ -49,32 +49,30 @@ public class ResourceSyncFileLoader {
     .put("trdf", "application/rdf+thrift")
     .put("nqud", "application/vnd.timbuctoo-rdf.nquads_unified_diff")
     .build();
-  private static final Logger LOG = getLogger(ResourceSyncFileLoader.class);
+
   private final RemoteFileRetriever remoteFileRetriever;
   private final ObjectMapper objectMapper;
-  private int timeout = 1000;
+
+  public ResourceSyncFileLoader() {
+    this(HttpClients.createMinimal());
+  }
+
+  public ResourceSyncFileLoader(int timeout) {
+    this(HttpClients.createMinimal(), timeout);
+  }
 
   public ResourceSyncFileLoader(CloseableHttpClient httpClient) {
-    objectMapper = new XmlMapper();
-    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    remoteFileRetriever = new RemoteFileRetriever(httpClient);
+    this(new RemoteFileRetriever(httpClient, 0));
   }
 
   public ResourceSyncFileLoader(CloseableHttpClient httpClient, int timeout) {
-    setTimeout(timeout);
-    objectMapper = new XmlMapper();
-    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    remoteFileRetriever = new RemoteFileRetriever(httpClient);
+    this(new RemoteFileRetriever(httpClient, timeout));
   }
 
   public ResourceSyncFileLoader(RemoteFileRetriever remoteFileRetriever) {
     objectMapper = new XmlMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     this.remoteFileRetriever = remoteFileRetriever;
-  }
-
-  public void setTimeout(int timeout) {
-    this.timeout = timeout;
   }
 
   //FIXME: maybe we should just store everything compressed
@@ -104,24 +102,16 @@ public class ResourceSyncFileLoader {
 
   public RemoteFilesList getRemoteFilesList(String capabilityListUri, String authString)
     throws IOException, CantRetrieveFileException {
-    System.out.println("getRemoteFilesList");
     List<UrlItem> capabilityList = getRsFile(capabilityListUri, authString).getItemList();
-    System.out.println("na getRsFile");
 
     List<RemoteFile> changes = new ArrayList<>();
     List<RemoteFile> resources = new ArrayList<>();
 
-    System.out.println("aantal capabilitylist items: " + capabilityList.size());
     for (UrlItem capabilityListItem : capabilityList) {
       if (capabilityListItem.getMetadata().getCapability().equals(Capability.CHANGELIST.getXmlValue())) {
-        System.out.println("voor getRsFile: " + capabilityListItem.getLoc());
         UrlSet rsFile = getRsFile(capabilityListItem.getLoc(), authString);
-        System.out.println("na getRsFile");
 
         String changeListExtension = ".*.nqud";
-
-        int teller = 0;
-        System.out.println("aantal changelist items: " + rsFile.getItemList().size());
         for (UrlItem changeListItem : rsFile.getItemList()) {
           RsLn changeLink = changeListItem.getLink();
           if (changeLink != null) {
@@ -131,60 +121,45 @@ public class ResourceSyncFileLoader {
               Metadata changeMd = new Metadata();
               changeMd.setMimeType(changeLink.getType().get());
               changeMd.setDateTime(changeListItem.getMetadata().getDateTime());
-              RemoteFile remoteFile = getRemoteFile(new Tuple<>(changeLink.getHref(), changeMd),
-                authString);
+              RemoteFile remoteFile = getRemoteFile(changeLink.getHref(), changeMd, authString);
               changes.add(remoteFile);
-              System.out.println("added remote file (" + (++teller) + ")");
             }
           }
         }
       } else if (capabilityListItem.getMetadata().getCapability().equals(Capability.RESOURCELIST.getXmlValue())) {
         UrlSet rsFile = getRsFile(capabilityListItem.getLoc(), authString);
 
-        System.out.println("aantal resourcelist items: " + rsFile.getItemList().size());
         for (UrlItem resourceListItem : rsFile.getItemList()) {
-          if (MIME_TYPE_FOR_EXTENSION.values().contains(resourceListItem.getMetadata().getMimeType()) ||
+          if (MIME_TYPE_FOR_EXTENSION.containsValue(resourceListItem.getMetadata().getMimeType()) ||
             SupportedRdfResourceListExtensions.createFromFile(resourceListItem.getLoc()) != null) {
-            resources.add(getRemoteFile(new Tuple<>(resourceListItem.getLoc(), resourceListItem.getMetadata()),
-              authString));
+            resources.add(getRemoteFile(resourceListItem.getLoc(), resourceListItem.getMetadata(), authString));
           }
         }
-        System.out.println("eind resourcelist");
       }
     }
-    System.out.println("einde getRemoteFilesList");
+
     return new RemoteFilesList(changes, resources);
   }
 
-
-  private RemoteFile getRemoteFile(Tuple<String, Metadata> item, String authString) {
-    return RemoteFile.create(
-      item.getLeft(),
-      () -> {
-        try {
-          return remoteFileRetriever.getFile(item.getLeft(), authString, timeout);
-        } catch (CantRetrieveFileException e) {
-          throw e;
-        }
-      },
-      getUrl(tuple(item.getLeft(), item.getRight())),
-      item.getRight()
-    );
+  private RemoteFile getRemoteFile(String href, Metadata metadata, String authString) {
+    return RemoteFile.create(href, () -> remoteFileRetriever.getFile(href, authString),
+        getUrl(href, metadata), metadata);
   }
 
-  private String getUrl(Tuple<String, Metadata> item) {
-    if (item.getRight() != null) {
-      return item.getRight().getMimeType();
+  private String getUrl(String href, Metadata metadata) {
+    if (metadata != null) {
+      return metadata.getMimeType();
     } else {
-      String extension = item.getLeft().substring(item.getLeft().lastIndexOf(".") + 1);
+      String extension = href.substring(href.lastIndexOf(".") + 1);
       return MIME_TYPE_FOR_EXTENSION.get(extension);
     }
   }
 
   private UrlSet getRsFile(String url, String authString) throws IOException, CantRetrieveFileException {
     LOG.info("getRsFile '{}'", url);
-    return objectMapper.readValue(IOUtils.toString(remoteFileRetriever.getFile(url, authString, timeout))
-      .replace("rs.md", "rs:md"), UrlSet.class);
+    return objectMapper.readValue(
+            IOUtils.toString(remoteFileRetriever.getFile(url, authString), StandardCharsets.UTF_8),
+            UrlSet.class);
   }
 
   private enum SupportedRdfResourceListExtensions {
@@ -203,8 +178,6 @@ public class ResourceSyncFileLoader {
     }
 
     public static SupportedRdfResourceListExtensions createFromFile(String fileName) {
-      System.out.println("createFromFile");
-      System.out.println("aantal values: " + SupportedRdfResourceListExtensions.values().length);
       for (SupportedRdfResourceListExtensions rdfExtensions : SupportedRdfResourceListExtensions.values()) {
         if (fileName.endsWith("." + rdfExtensions.getExtension())) {
           return rdfExtensions;
@@ -219,8 +192,8 @@ public class ResourceSyncFileLoader {
   }
 
   static class RemoteFilesList {
-    private List<RemoteFile> changeList;
-    private List<RemoteFile> resourceList;
+    private final List<RemoteFile> changeList;
+    private final List<RemoteFile> resourceList;
 
     public RemoteFilesList(List<RemoteFile> changeList, List<RemoteFile> resourceList) {
       this.changeList = changeList;
@@ -238,24 +211,31 @@ public class ResourceSyncFileLoader {
 
   static class RemoteFileRetriever {
     private final HttpClient httpClient;
+    private final int timeout;
 
     private RemoteFileRetriever(HttpClient httpClient) {
       this.httpClient = httpClient;
+      this.timeout = 0;
     }
 
-    public InputStream getFile(String url, String authString, int timeout)
+    private RemoteFileRetriever(HttpClient httpClient, int timeout) {
+      this.httpClient = httpClient;
+      this.timeout = timeout;
+    }
+
+    public InputStream getFile(String url, String authString)
       throws CantRetrieveFileException, IOException {
       HttpGet httpGet = new HttpGet(url);
-      System.out.println("getFile - url: " + url);
 
-      /*Timeout time is set to 100seconds to prevent socket timeout during changelist import*/
-      httpGet.setConfig(RequestConfig.custom().setSocketTimeout(timeout).build());
+      // Timeout time is set to 100 seconds to prevent socket timeout during changelist import
+      if (timeout > 0) {
+        httpGet.setConfig(RequestConfig.custom().setSocketTimeout(timeout).build());
+      }
       if (authString != null) {
         httpGet.addHeader("Authorization", authString);
       }
-      System.out.println("voor httpResponse");
+
       HttpResponse httpResponse = httpClient.execute(httpGet);
-      System.out.println("erna: " + httpResponse);
       if (httpResponse.getStatusLine().getStatusCode() == 200) {
         InputStream content = httpResponse.getEntity().getContent();
         if (content != null) {
@@ -269,6 +249,4 @@ public class ResourceSyncFileLoader {
         httpResponse.getStatusLine().getReasonPhrase());
     }
   }
-
 }
-

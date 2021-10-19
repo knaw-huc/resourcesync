@@ -10,12 +10,7 @@ import nl.knaw.huygens.timbuctoo.remote.rs.xml.RsMd;
 
 import java.net.URI;
 
-
-/**
- * Render a RsItem, a &lt;url&gt; or &lt;sitemap&gt; element.
- */
 public class SetItemView {
-
   private String location;
   private String capability;
   private ResultView describedBy;
@@ -28,9 +23,7 @@ public class SetItemView {
     init(resultIndex, rsItem, interpreter);
   }
 
-  @SuppressWarnings("unchecked")
   private void init(ResultIndex resultIndex, RsItem<?> rsItem, Interpreter interpreter) {
-
     location = rsItem.getLoc();
     
     capability = rsItem.getMetadata()
@@ -62,5 +55,4 @@ public class SetItemView {
   public ResultView getDescribedBy() {
     return describedBy;
   }
-
 }

@@ -7,9 +7,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class LinkList {
-
-  private Set<URI> validUris = new TreeSet<>();
-  private Set<String> invalidUris = new TreeSet<>();
+  private final Set<URI> validUris = new TreeSet<>();
+  private final Set<String> invalidUris = new TreeSet<>();
 
   public void add(URI uri) {
     validUris.add(uri);

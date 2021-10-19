@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
  */
 @JsonTypeInfo(include = JsonTypeInfo.As.PROPERTY, use = JsonTypeInfo.Id.NAME)
 public class SetListBase {
-
   private List<SetItemView> setDetails;
   private List<ResultView> explorationAttempts;
   private List<ResultView> resultsWithExceptions;
@@ -34,9 +33,7 @@ public class SetListBase {
     init(resultIndex, interpreter);
   }
 
-  @SuppressWarnings("unchecked")
   private void init(ResultIndex resultIndex, Interpreter interpreter) {
-
     setDetails = filterCapabilityLists(resultIndex, interpreter);
 
     explorationAttempts = resultIndex.getResultMap().values().stream()
@@ -53,19 +50,19 @@ public class SetListBase {
   }
 
   static List<SetItemView> filterCapabilityLists(ResultIndex resultIndex, Interpreter interpreter) {
-    return resultIndex.getResultMap().values().stream()
-      .filter(result -> result.getContent().isPresent() && result.getContent().orElse(null) instanceof Urlset)
-      //change  above to result.getContent().ifPresent()
-      .map(result -> (Result<Urlset>) result) // save cast because of previous filter
-      .filter(result -> result.getContent().map(RsRoot::getMetadata)
-        .flatMap(RsMd::getCapability).orElse("invalid").equals(Capability.DESCRIPTION.xmlValue))
-      .map(urlsetResult -> urlsetResult.getContent().orElse(null))
-      .map(Urlset::getItemList)
-      .flatMap(Collection::stream)
-      .map(rsItem -> new SetItemView(resultIndex, rsItem, interpreter))
-      //below is to prevent duplicate locations because of redirection (Eg. with .well-known/resource)
-      .collect(Collectors.toMap(SetItemView::getLocation, loc -> loc, (loc1, loc2) -> loc1)).values().stream()
-      .collect(Collectors.toList());
+    return new ArrayList<>(
+            resultIndex.getResultMap().values().stream()
+                    .filter(result -> result.getContent().isPresent() && result.getContent().orElse(null) instanceof Urlset)
+                    //change  above to result.getContent().ifPresent()
+                    .map(result -> (Result<Urlset>) result) // save cast because of previous filter
+                    .filter(result -> result.getContent().map(RsRoot::getMetadata)
+                            .flatMap(RsMd::getCapability).orElse("invalid").equals(Capability.DESCRIPTION.xmlValue))
+                    .map(urlsetResult -> urlsetResult.getContent().orElse(null))
+                    .map(Urlset::getItemList)
+                    .flatMap(Collection::stream)
+                    .map(rsItem -> new SetItemView(resultIndex, rsItem, interpreter))
+                    //below is to prevent duplicate locations because of redirection (Eg. with .well-known/resource)
+                    .collect(Collectors.toMap(SetItemView::getLocation, loc -> loc, (loc1, loc2) -> loc1)).values());
   }
 
 

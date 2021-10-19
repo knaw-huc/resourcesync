@@ -44,7 +44,6 @@ import java.time.temporal.ChronoField;
  *
 */
 public class ZonedDateTimeAdapter extends XmlAdapter<String, ZonedDateTime> {
-
   private static ZoneId ZONE_ID;
 
   public static ZoneId getZoneId() {
@@ -60,7 +59,7 @@ public class ZonedDateTimeAdapter extends XmlAdapter<String, ZonedDateTime> {
     return oldZoneId;
   }
 
-  private DateTimeFormatter localFormat = new DateTimeFormatterBuilder()
+  private final DateTimeFormatter localFormat = new DateTimeFormatterBuilder()
     .appendPattern("yyyy[-MM[-dd['T'HH[:mm[:ss]]]]]")
     .parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
     .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)

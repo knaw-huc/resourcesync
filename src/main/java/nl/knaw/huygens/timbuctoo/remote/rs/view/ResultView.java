@@ -12,11 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- *
- */
 public class ResultView {
-
   private String uri;
   private int ordinal;
   private int statusCode;
@@ -56,9 +52,7 @@ public class ResultView {
         RsRoot<?, ?> rsRoot = (RsRoot) content;
         childCount = rsRoot.getItemList().size();
         Optional<Capability> optionalCapa = rsRoot.getCapability();
-        if (optionalCapa.isPresent()) {
-          capability = optionalCapa.get().xmlValue;
-        }
+        optionalCapa.ifPresent(value -> capability = value.xmlValue);
       } else if (content instanceof Description) {
         description = new DescriptionView((Result<Description>) result, interpreter);
       }
@@ -73,7 +67,6 @@ public class ResultView {
       .collect(Collectors.toList());
 
     invalidUris = result.getInvalidUris();
-
   }
 
   public String getUri() {
@@ -120,6 +113,4 @@ public class ResultView {
   public Set<String> getInvalidUris() {
     return invalidUris;
   }
-
-
 }

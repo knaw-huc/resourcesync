@@ -2,7 +2,6 @@ package nl.knaw.huygens.timbuctoo.remote.rs.discover;
 
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.ResourceSyncContext;
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.RsRoot;
-import nl.knaw.huygens.timbuctoo.util.LambdaExceptionUtil.Function_WithExceptions;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -51,13 +50,11 @@ import java.util.regex.Pattern;
  *   http://www.openarchives.org/rs/1.0/resourcesync#robots</a>
  */
 public class LinkExplorer extends AbstractUriExplorer {
-
   private final ResourceSyncContext rsContext;
-  private Function_WithExceptions<HttpResponse, List<String>, ?> responseReader;
+  private final ApplyException<HttpResponse, List<String>, ?> responseReader;
 
-  public LinkExplorer(CloseableHttpClient httpClient,
-                      ResourceSyncContext rsContext,
-                      Function_WithExceptions<HttpResponse, List<String>, ?> responseReader) {
+  public LinkExplorer(CloseableHttpClient httpClient, ResourceSyncContext rsContext,
+                      ApplyException<HttpResponse, List<String>, ?> responseReader) {
     super(httpClient);
     this.rsContext = rsContext;
     this.responseReader = responseReader;
@@ -81,14 +78,13 @@ public class LinkExplorer extends AbstractUriExplorer {
     return  result;
   }
 
-  private Function<List<String>, LinkList> stringListToLinkListConverter = (stringList) -> {
+  private final Function<List<String>, LinkList> stringListToLinkListConverter = (stringList) -> {
     LinkList linkList = new LinkList();
     linkList.resolve(getCurrentUri(), stringList);
     return linkList;
   };
 
-  static Function_WithExceptions<HttpResponse, List<String>, Exception> linkReader = (response) -> {
-
+  static ApplyException<HttpResponse, List<String>, Exception> linkReader = (response) -> {
     // a webpage that contains a link to a Capability List in the <head> section
     // http://www.openarchives.org/rs/1.0/resourcesync#ex_9
     InputStream inStream = response.getEntity().getContent();
@@ -120,7 +116,7 @@ public class LinkExplorer extends AbstractUriExplorer {
     return uriList;
   };
 
-  static  Function_WithExceptions<HttpResponse, List<String>, Exception> robotsReader = (response) -> {
+  static ApplyException<HttpResponse, List<String>, Exception> robotsReader = (response) -> {
     String text = IOUtils.toString(response.getEntity().getContent(), getCharset(response));
     Matcher match = Pattern.compile("(?m)^Sitemap: (.*?)$").matcher(text);
     List<String> uriList = new ArrayList<>();
@@ -129,5 +125,4 @@ public class LinkExplorer extends AbstractUriExplorer {
     }
     return uriList;
   };
-
 }

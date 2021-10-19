@@ -6,11 +6,7 @@ import nl.knaw.huygens.timbuctoo.remote.rs.discover.Result;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- *
- */
 public class TreeResultView extends ResultView {
-
   private List<TreeResultView> children;
 
   public TreeResultView(Result<?> result) {

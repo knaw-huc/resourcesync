@@ -1,43 +1,37 @@
 package nl.knaw.huygens.timbuctoo.remote.rs.download;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.Sets;
 import nl.knaw.huygens.timbuctoo.remote.rs.download.ResourceSyncFileLoader.RemoteFilesList;
 import nl.knaw.huygens.timbuctoo.remote.rs.download.exceptions.CantRetrieveFileException;
-import nl.knaw.huygens.timbuctoo.remote.rs.exceptions.CantDetermineDataSetException;
+import nl.knaw.huygens.timbuctoo.remote.rs.download.exceptions.CantDetermineDataSetException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.time.Instant;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.Future;
 
 public class ResourceSyncImport {
-  public static final Logger LOG = LoggerFactory.getLogger(ResourceSyncFileLoader.class);
-  private ResourceSyncFileLoader resourceSyncFileLoader;
-  private boolean async;
+  private static final Logger LOG = LoggerFactory.getLogger(ResourceSyncFileLoader.class);
+  private final ResourceSyncFileLoader resourceSyncFileLoader;
+  private final boolean async;
 
   public ResourceSyncImport(ResourceSyncFileLoader resourceSyncFileLoader, boolean async) {
     this.resourceSyncFileLoader = resourceSyncFileLoader;
     this.async = async;
   }
 
-  public ResourceSyncReport filterAndImport(String capabilityListUri, String userSpecifiedDataSet, boolean update,
-                                            String authString, ImportManager importManager, Date lastUpdate,
-                                            String baseUri, String defaultGraph)
-    throws CantDetermineDataSetException, IOException, CantRetrieveFileException {
+  public void filterAndImport(String capabilityListUri, String userSpecifiedDataSet, String authString,
+                              Date lastUpdate, WithFile withFile)
+      throws CantDetermineDataSetException, IOException, CantRetrieveFileException {
     List<RemoteFile> filesToImport;
 
     if (userSpecifiedDataSet == null) {
-      filesToImport = filter(capabilityListUri, update, authString, lastUpdate);
+      filesToImport = filter(capabilityListUri, authString, lastUpdate);
     } else {
       filesToImport = filter(capabilityListUri, userSpecifiedDataSet, authString);
     }
@@ -48,111 +42,65 @@ public class ResourceSyncImport {
 
     if (!files.hasNext()) {
       LOG.error("No supported files available for import.");
-      return new ResourceSyncReport();
+      return;
     }
-
-    ResourceSyncReport resourceSyncReport = new ResourceSyncReport();
 
     try {
       while (files.hasNext()) {
         RemoteFile file = files.next();
-        MediaType parsedMediatype = MediaType.APPLICATION_OCTET_STREAM_TYPE;
-        try {
-          parsedMediatype = MediaType.valueOf(file.getMimeType());
-        } catch (IllegalArgumentException e) {
-          LOG.error("Failed to get mediatype", e);
-        }
-        if (importManager.isRdfTypeSupported(parsedMediatype)) {
-          resourceSyncReport.importedFiles.add(file.getUrl());
-          // TODO: toevoegen aan ImportManager.addlog
-          Future<ImportStatus> importedFileFuture = importManager.addLog(
-            baseUri, defaultGraph,
-            file.getUrl().substring(file.getUrl().lastIndexOf('/') + 1),
-            file.getData().get(),
-            Optional.of(Charsets.UTF_8),
-            parsedMediatype
-          );
-          //TODO: Make synchronous import more efficient
-          //Currently synchronous import is to be used only for testing purposes.
-          if (!async) {
-            importedFileFuture.get();
-          }
-        } else {
-          resourceSyncReport.ignoredFiles.add(file.getUrl());
-          importManager.addFile(
-            file.getData().get(),
-            file.getUrl(),
-            parsedMediatype
-          );
+        Future<?> fileFuture = withFile.withFile(
+            file.getData().get(), file.getUrl(), file.getMimeType(), file.getMetadata().getDateTime());
+
+        if (!async) {
+          fileFuture.get();
         }
       }
-      return resourceSyncReport;
     } catch (Exception e) {
       LOG.error("Could not read files to import", e);
-      return resourceSyncReport;
     }
   }
 
-  private List<RemoteFile> filter(String capabilityListUri, boolean update, String authString, Date lastUpdate)
-    throws CantDetermineDataSetException,
-    IOException,
-    CantRetrieveFileException {
-    System.out.println("filter: " + update);
-    try {
-      RemoteFilesList remoteFilesList = resourceSyncFileLoader.getRemoteFilesList(capabilityListUri, authString);
+  private List<RemoteFile> filter(String capabilityListUri, String authString, Date lastUpdate)
+      throws CantDetermineDataSetException, IOException, CantRetrieveFileException {
+    RemoteFilesList remoteFilesList = resourceSyncFileLoader.getRemoteFilesList(capabilityListUri, authString);
 
-      List<RemoteFile> resources = new ArrayList<>();
+    List<RemoteFile> resources = new ArrayList<>();
 
-      if (!remoteFilesList.getChangeList().isEmpty()) {
-        if (update) {
-
-          for (RemoteFile remoteFile : remoteFilesList.getChangeList()) {
-            System.out.println("iterate changeList");
-            if (remoteFile.getMetadata().getDateTime().after(lastUpdate)) {
-              System.out.println("date after!");
-              resources.add(remoteFile);
-            } else {
-              System.out.println("NOT date after!");
-            }
+    if (!remoteFilesList.getChangeList().isEmpty()) {
+      if (lastUpdate != null) {
+        for (RemoteFile remoteFile : remoteFilesList.getChangeList()) {
+          if (remoteFile.getMetadata().getDateTime().after(lastUpdate)) {
+            resources.add(remoteFile);
           }
-
-        } else {
-          System.out.println("update==false");
-          resources.addAll(remoteFilesList.getChangeList());
         }
-        System.out.println("aantal resources: " + resources.size());
-        return resources;
-      }
-
-      for (RemoteFile remoteFile : remoteFilesList.getResourceList()) {
-        if (remoteFile.getMetadata().isDataset()) {
-          resources.add(remoteFile);
-          return resources;
-        }
-      }
-
-      if (remoteFilesList.getResourceList().size() == 1) {
-        resources.add(remoteFilesList.getResourceList().get(0));
       } else {
-        throw new CantDetermineDataSetException(remoteFilesList.getResourceList());
+        resources.addAll(remoteFilesList.getChangeList());
       }
-
       return resources;
-
-    } catch (IOException e) {
-      throw e;
     }
 
+    for (RemoteFile remoteFile : remoteFilesList.getResourceList()) {
+      if (remoteFile.getMetadata().isDataset()) {
+        resources.add(remoteFile);
+        return resources;
+      }
+    }
+
+    if (remoteFilesList.getResourceList().size() == 1) {
+      resources.add(remoteFilesList.getResourceList().get(0));
+    } else {
+      throw new CantDetermineDataSetException();
+    }
+
+    return resources;
   }
 
   private List<RemoteFile> filter(String capabilityListUri, String userSpecifiedDataSet, String authString)
-    throws CantRetrieveFileException {
-    System.out.println("filter 2");
+      throws CantRetrieveFileException {
     try {
       RemoteFilesList remoteFilesList = resourceSyncFileLoader.getRemoteFilesList(capabilityListUri, authString);
 
       List<RemoteFile> resources = new ArrayList<>();
-
       for (RemoteFile remoteFile : remoteFilesList.getResourceList()) {
         if (remoteFile.getUrl().equals(userSpecifiedDataSet)) {
           resources.add(remoteFile);
@@ -161,14 +109,13 @@ public class ResourceSyncImport {
       }
 
       return resources;
-
     } catch (IOException e) {
       return Collections.emptyList();
     }
   }
 
-  public static class ResourceSyncReport {
-    public final Set<String> importedFiles = Sets.newTreeSet();
-    public final Set<String> ignoredFiles = Sets.newTreeSet();
+  @FunctionalInterface
+  public interface WithFile {
+    Future<?> withFile(InputStream inputStream, String url, String mediaType, Date dateTime) throws Exception;
   }
 }

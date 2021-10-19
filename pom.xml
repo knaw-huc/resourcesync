@@ -2,569 +2,312 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>nl.knaw.huc</groupId>
+  <artifactId>resourcesync</artifactId>
+  <version>2.0.0</version>
 
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>nl.knaw.huc</groupId>
-    <artifactId>resourcesync</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+  <name>ResourceSync</name>
+  <description>ResourceSync client library</description>
+  <url>http://repository.huygens.knaw.nl/static/search.html</url>
+  <organization>
+    <name>DI-HUC</name>
+    <url>https://huc.knaw.nl</url>
+  </organization>
+  <inceptionYear>2019</inceptionYear>
 
-    <name>ResourceSync</name>
-    <description>ResourceSync client library
-    </description>
-    <url>http://repository.huygens.knaw.nl/static/search.html</url>
-    <organization>
-      <name>DI-HUC</name>
-      <url>https://huc.knaw.nl</url>
-    </organization>
-    <inceptionYear>2019</inceptionYear>
+  <licenses>
+    <license>
+      <name>GNU General Public License</name>
+      <url>http://www.gnu.org/licenses/gpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
-    <licenses>
-      <license>
-        <name>GNU General Public License</name>
-        <url>http://www.gnu.org/licenses/gpl.txt</url>
-        <distribution>repo</distribution>
-      </license>
-    </licenses>
+  <distributionManagement>
+    <repository>
+      <id>maven.huygens</id>
+      <name>Huygens Maven Repository</name>
+      <url>${huygens-repo}</url>
+    </repository>
 
-    <distributionManagement>
-      <repository>
-        <id>maven.huygens</id>
-        <name>Huygens Maven Repository</name>
-        <url>${huygens-repo}</url>
-      </repository>
-      <snapshotRepository>
-        <id>maven.huygens.snapshot</id>
-        <name>Huygens Maven Snapshot Repository</name>
-        <url>${huygens-repo}</url>
-        <uniqueVersion>false</uniqueVersion>
-      </snapshotRepository>
-    </distributionManagement>
+    <snapshotRepository>
+      <id>maven.huygens.snapshot</id>
+      <name>Huygens Maven Snapshot Repository</name>
+      <url>${huygens-repo}</url>
+      <uniqueVersion>false</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
 
-    <developers>
-      <developer>
-        <id>MK</id>
-        <name>Meindert Kroese</name>
-        <organization>DI-HUC</organization>
-        <organizationUrl>https://huc.knaw.nl</organizationUrl>
-      </developer>
-      <developer>
-        <id>MM</id>
-        <name>Martijn Maas</name>
-        <organization>DI-HUC</organization>
-        <organizationUrl>https://huc.knaw.nl</organizationUrl>
-      </developer>
-      <developer>
-        <id>MW</id>
-        <name>Menzo Windhouwer</name>
-        <organization>DI-HUC</organization>
-        <organizationUrl>https://huc.knaw.nl</organizationUrl>
-      </developer>
-    </developers>
+  <developers>
+    <developer>
+      <id>MK</id>
+      <name>Meindert Kroese</name>
+      <organization>DI-HUC</organization>
+      <organizationUrl>https://huc.knaw.nl</organizationUrl>
+    </developer>
 
-    <prerequisites>
-      <maven>3.0</maven>
-    </prerequisites>
+    <developer>
+      <id>MM</id>
+      <name>Martijn Maas</name>
+      <organization>DI-HUC</organization>
+      <organizationUrl>https://huc.knaw.nl</organizationUrl>
+    </developer>
 
-    <properties>
+    <developer>
+      <id>MW</id>
+      <name>Menzo Windhouwer</name>
+      <organization>DI-HUC</organization>
+      <organizationUrl>https://huc.knaw.nl</organizationUrl>
+    </developer>
+  </developers>
 
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-      <!-- don't generate javadoc -->
-      <maven.javadoc.skip>true</maven.javadoc.skip>
-      <!-- test output -->
-      <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-      <rpm.app-home>/data/timbuctoo/app</rpm.app-home>
+    <!-- don't generate javadoc -->
+    <maven.javadoc.skip>true</maven.javadoc.skip>
 
-      <!--version numbers-->
-      <jdk.version>1.8</jdk.version>
-      <maven-compiler.version>3.5.1</maven-compiler.version>
-      <!-- code dependencies -->
-      <activemq.version>5.15.8</activemq.version>
-      <dropwizard.version>1.3.9</dropwizard.version>
-      <dropwizard-activemq.version>0.5.2</dropwizard-activemq.version>
-      <jsonassert.version>1.5.0</jsonassert.version>
-      <tinkerpop3.version>3.1.0-incubating</tinkerpop3.version>
-      <!-- The number after the dash is the Neo4j version -->
-      <neo4j-tinkerpop-api-impl.version>0.4-3.0.3</neo4j-tinkerpop-api-impl.version>
-      <neo4j.version>3.1.0</neo4j.version>
-      <hamcrest-library.version>2.1</hamcrest-library.version>
-      <vavr.version>0.10.0</vavr.version>
-      <junit.version>4.12</junit.version>
-      <mockito.version>2.24.5</mockito.version>
-      <contract-diff.version>1.0.0-SNAPSHOT</contract-diff.version>
-      <jsonld-java.version>0.12.3</jsonld-java.version>
-      <rdf4j.version>2.4.5</rdf4j.version>
-      <xmlunit.version>2.6.2</xmlunit.version>
-      <jackson.version>2.9.8</jackson.version>
-      <!-- Maven plugins -->
-      <appassembler.version>2.0.0</appassembler.version>
-      <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
-      <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-      <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
-      <maven-failsafe-plugin.version>2.22.1</maven-failsafe-plugin.version>
-    </properties>
+    <!-- test output -->
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <dependencyManagement>
-      <dependencies>
-        <dependency>
-          <groupId>com.fasterxml.jackson</groupId>
-          <artifactId>jackson-bom</artifactId>
-          <version>${jackson.version}</version>
-          <scope>import</scope>
-          <type>pom</type>
-        </dependency>
-      </dependencies>
-    </dependencyManagement>
+    <!-- version numbers -->
+    <jdk.version>11</jdk.version>
+    <maven-compiler.version>3.5.1</maven-compiler.version>
 
+    <!-- code dependencies -->
+    <rdf4j.version>3.6.3</rdf4j.version>
+    <jackson.version>2.10.5</jackson.version>
+  </properties>
 
+  <dependencyManagement>
     <dependencies>
-      <!-- list checkstyle so the bazel build also downloads it -->
       <dependency>
-        <groupId>com.puppycrawl.tools</groupId>
-        <artifactId>checkstyle</artifactId>
-        <version>8.29</version>
-      </dependency>
-
-      <!-- ## Main dependencies ## -->
-
-      <!-- ### Xml indenting ## -->
-      <dependency>
-        <groupId>org.glassfish.jaxb</groupId>
-        <artifactId>txw2</artifactId>
-        <version>2.3.2</version>
-      </dependency>
-      <!-- ### HTML Parser ## -->
-      <dependency>
-        <groupId>org.jsoup</groupId>
-        <artifactId>jsoup</artifactId>
-        <version>1.14.2</version>
-      </dependency>
-
-      <!-- Rdf4J -->
-      <dependency>
-        <groupId>org.eclipse.rdf4j</groupId>
-        <artifactId>rdf4j-rio-rdfxml</artifactId>
-        <version>${rdf4j.version}</version>
-      </dependency>
-
-      <!-- ### make generating of value types easier -->
-      <dependency>
-        <groupId>org.immutables</groupId>
-        <artifactId>value</artifactId>
-        <version>2.7.5</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.datatype</groupId>
-        <artifactId>jackson-datatype-guava</artifactId>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
         <version>${jackson.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
       </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.datatype</groupId>
-        <artifactId>jackson-datatype-jdk8</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.dataformat</groupId>
-        <artifactId>jackson-dataformat-xml</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <!-- ### Std lib additions ## -->
-
-      <!-- Apache Commons -->
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-        <version>3.8.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
-        <version>4.5.9</version>
-      </dependency>
-
-      <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>2.6</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>21.0</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.code.findbugs</groupId>
-        <artifactId>jsr305</artifactId>
-        <version>3.0.2</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.annotation</groupId>
-        <artifactId>javax.annotation-api</artifactId>
-        <version>1.3.2</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>javax.ws.rs-api</artifactId>
-        <version>2.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-        <version>2.3.1</version>
-      </dependency>
-
-
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>1.7.26</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.rdf4j</groupId>
-        <artifactId>rdf4j-model</artifactId>
-        <version>2.5.3</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.graphql-java</groupId>
-        <artifactId>graphql-java</artifactId>
-        <version>11.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.puppycrawl.tools</groupId>
-        <artifactId>checkstyle</artifactId>
-        <version>8.29</version>
-      </dependency>
-
-      <!-- ## End of main dependencies ## -->
-
     </dependencies>
+  </dependencyManagement>
 
-    <repositories>
-      <repository>
-        <id>oracleReleases</id>
-        <name>Oracle Released Java Packages</name>
-        <url>https://download.oracle.com/maven</url>
-        <layout>default</layout>
-      </repository>
-      <repository>
-        <id>central</id>
-        <name>Central repository</name>
-        <url>https://repo1.maven.org/maven2/</url>
-      </repository>
-      <repository>
-        <id>sun-repo-2</id>
-        <url>https://download.java.net/maven/2/</url>
-      </repository>
-      <repository>
-        <id>apache</id>
-        <url>https://repository.apache.org/content/repositories/public/</url>
-      </repository>
-      <repository>
-        <id>oracle</id>
-        <url>https://download.oracle.com/maven/</url>
-      </repository>
-      <repository>
-        <id>Huygens</id>
-        <url>http://maven.huygens.knaw.nl/repository/</url>
-        <releases>
-          <enabled>true</enabled>
-          <updatePolicy>always</updatePolicy>
-          <checksumPolicy>warn</checksumPolicy>
-        </releases>
-        <snapshots>
-          <enabled>true</enabled>
-          <updatePolicy>always</updatePolicy>
-          <checksumPolicy>fail</checksumPolicy>
-        </snapshots>
-      </repository>
-      <repository>
-        <id>mbknor</id>
-        <name>mbknor</name>
-        <url>https://raw.githubusercontent.com/mbknor/mbknor.github.com/master/m2repo/releases</url>
-      </repository>
-      <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-      </repository>
-      <repository>
-        <id>jcenter</id>
-        <name>bintray</name>
-        <url>http://jcenter.bintray.com</url>
-      </repository>
-    </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>txw2</artifactId>
+      <version>3.0.2</version>
+    </dependency>
 
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.14.3</version>
+    </dependency>
 
-    <build>
-    <extensions>
-        <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
-                <version>3.3.3</version>
-        </extension>
-    </extensions>
+    <dependency>
+      <groupId>org.eclipse.rdf4j</groupId>
+      <artifactId>rdf4j-model</artifactId>
+      <version>${rdf4j.version}</version>
+    </dependency>
 
-      <plugins>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>${maven-compiler.version}</version>
-          <configuration>
-            <source>${jdk.version}</source>
-            <target>${jdk.version}</target>
-          </configuration>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.19.1</version>
-          <configuration>
-            <systemPropertyVariables>
-              <logback.configurationFile>${basedir}/src/test/resources/disable-logging.xml</logback.configurationFile>
-            </systemPropertyVariables>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>build-helper-maven-plugin</artifactId>
-          <version>${build-helper-maven-plugin.version}</version>
-          <executions>
-            <execution>
-              <id>add-test-source</id>
-              <phase>generate-test-sources</phase>
-              <goals>
-                <goal>add-test-source</goal>
-              </goals>
-              <configuration>
-                <sources>
-                  <source>${basedir}/src/spec/java</source>
-                </sources>
-              </configuration>
-            </execution>
-            <execution>
-              <id>add-test-resource</id>
-              <phase>generate-test-resources</phase>
-              <goals>
-                <goal>add-test-resource</goal>
-              </goals>
-              <configuration>
-                <resources>
-                  <resource>
-                    <directory>
-                      ${basedir}/src/spec/resources
-                    </directory>
-                  </resource>
-                </resources>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>appassembler-maven-plugin</artifactId>
-          <version>${appassembler.version}</version>
-          <executions>
-            <execution>
-              <phase>package</phase>
-              <goals>
-                <goal>assemble</goal>
-              </goals>
-              <configuration>
-                <programs>
-                  <program>
-                    <id>resourcesync</id>
-                    <mainClass>nl.knaw.huygens.timbuctoo.remote.rs.ResourceSyncService</mainClass>
-                  </program>
-                </programs>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-failsafe-plugin</artifactId>
-          <version>${maven-failsafe-plugin.version}</version>
-          <configuration>
-            <forkCount>1</forkCount>
-            <reuseForks>false</reuseForks>
-            <argLine>-Xms1024m -Xmx1024m</argLine>
-            <testFailureIgnore>false</testFailureIgnore>
-            <skip>false</skip>
-            <testSourceDirectory>${project.build.testOutputDirectory}</testSourceDirectory>
-            <includes>
-              <include>**/*Fixture.java</include>
-            </includes>
-            <systemPropertyVariables>
-              <!--<dw.logging.level>OFF</dw.logging.level>&lt;!&ndash; Do you want no logging output from your tests? because that's how you get no logging output from your tests&ndash;&gt;-->
-            </systemPropertyVariables>
-          </configuration>
-          <executions>
-            <execution>
-              <id>run-integration-tests</id>
-              <phase>integration-test</phase>
-              <goals>
-                <goal>integration-test</goal>
-              </goals>
-            </execution>
-            <execution>
-              <id>verify</id>
-              <phase>verify</phase>
-              <goals>
-                <goal>verify</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>${maven-checkstyle-plugin.version}</version>
-          <executions>
-            <execution>
-              <id>validate</id>
-              <phase>validate</phase>
-              <goals>
-                <goal>check</goal>
-              </goals>
-              <configuration>
-                <configLocation>/src/main/resources/checkstyle_config.xml</configLocation>
-                <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                <encoding>UTF-8</encoding>
-                <consoleOutput>true</consoleOutput>
-                <failsOnError>true</failsOnError>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>pl.project13.maven</groupId>
-          <artifactId>git-commit-id-plugin</artifactId>
-          <version>2.2.1</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>revision</goal>
-              </goals>
-            </execution>
-          </executions>
+    <dependency>
+      <groupId>org.eclipse.rdf4j</groupId>
+      <artifactId>rdf4j-rio-rdfxml</artifactId>
+      <version>${rdf4j.version}</version>
+    </dependency>
 
-          <configuration>
-            <dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
-            <prefix>git</prefix>
-            <dateFormat>dd.MM.yyyy '@' HH:mm:ss z</dateFormat>
-            <generateGitPropertiesFile>true</generateGitPropertiesFile>
-            <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
-            <format>properties</format>
+    <dependency>
+      <groupId>org.immutables</groupId>
+      <artifactId>value</artifactId>
+      <version>2.8.8</version>
+      <scope>provided</scope>
+    </dependency>
 
-            <failOnNoGitDirectory>false</failOnNoGitDirectory>
-            <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
 
-            <skip>false</skip>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
 
-            <includeOnlyProperties>
-              <includeOnlyProperty>^git.branch$</includeOnlyProperty>
-              <includeOnlyProperty>^git.commit.id$</includeOnlyProperty>
-              <includeOnlyProperty>^git.commit.time$</includeOnlyProperty>
-            </includeOnlyProperties>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.12.0</version>
+    </dependency>
 
-            <!--
-              if set to true it uses native `git` executable for extracting all data.
-              This usually has better performance than the default (jgit) implementation, but requires you to
-              have git available as executable for the build as well as *might break unexpectedly* when you
-              upgrade your system-wide git installation.
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.13</version>
+    </dependency>
 
-              As rule of thumb - stay on `jgit` (keep this `false`) until you notice performance problems.
-            -->
-            <useNativeGit>false</useNativeGit>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.11.0</version>
+    </dependency>
 
-            <!--
-                read up about git-describe on the in man, or it's homepage - it's a really powerful versioning helper
-            -->
-            <gitDescribe>
-              <!-- don't generate the describe property -->
-              <skip>false</skip>
-            </gitDescribe>
-          </configuration>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>31.0.1-jre</version>
+    </dependency>
 
-        </plugin>
-        <plugin>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <executions>
-            <execution>
-              <phase>package</phase>
-              <goals>
-                <goal>run</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <configuration>
-            <source>8</source>
-            <target>8</target>
-          </configuration>
-        </plugin>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>3.0.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+      <version>1.3.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+      <version>2.1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.3.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.32</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.32</version>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <id>oracleReleases</id>
+      <name>Oracle Released Java Packages</name>
+      <url>https://download.oracle.com/maven</url>
+      <layout>default</layout>
+    </repository>
+
+    <repository>
+      <id>central</id>
+      <name>Central repository</name>
+      <url>https://repo1.maven.org/maven2/</url>
+    </repository>
+
+    <repository>
+      <id>sun-repo-2</id>
+      <url>https://download.java.net/maven/2/</url>
+    </repository>
+
+    <repository>
+      <id>apache</id>
+      <url>https://repository.apache.org/content/repositories/public/</url>
+    </repository>
+
+    <repository>
+      <id>oracle</id>
+      <url>https://download.oracle.com/maven/</url>
+    </repository>
+
+    <repository>
+      <id>Huygens</id>
+      <url>http://maven.huygens.knaw.nl/repository/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+    </repository>
+
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+
+    <repository>
+      <id>jcenter</id>
+      <name>bintray</name>
+      <url>http://jcenter.bintray.com</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>2.3</version>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
         <configuration>
-            <createDependencyReducedPom>true</createDependencyReducedPom>
-            <filters>
-                <filter>
-                    <artifact>*:*</artifact>
-                    <excludes>
-                        <exclude>META-INF/*.SF</exclude>
-                        <exclude>META-INF/*.DSA</exclude>
-                        <exclude>META-INF/*.RSA</exclude>
-                    </excludes>
-                </filter>
-            </filters>
+          <source>${jdk.version}</source>
+          <target>${jdk.version}</target>
         </configuration>
-        <executions>
-            <execution>
-                <phase>package</phase>
-                <goals>
-                    <goal>shade</goal>
-                </goals>
-                <configuration>
-                    <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>com.example.helloworld.HelloWorldApplication</mainClass>
-                        </transformer>
-                    </transformers>
-                </configuration>
-            </execution>
-        </executions>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.0.0</version>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.2.1</version>
         <executions>
           <execution>
-            <id>validate</id>
-            <phase>validate</phase>
+            <id>attach-sources</id>
             <goals>
-              <goal>check</goal>
+              <goal>jar</goal>
             </goals>
-            <configuration>
-              <configLocation>/src/main/resources/checkstyle_config.xml</configLocation>
-              <includeTestSourceDirectory>true</includeTestSourceDirectory>
-              <encoding>UTF-8</encoding>
-              <consoleOutput>true</consoleOutput>
-              <failsOnError>true</failsOnError>
-            </configuration>
           </execution>
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>appassembler-maven-plugin</artifactId>
+        <version>2.0.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>assemble</goal>
+            </goals>
+            <configuration>
+              <programs>
+                <program>
+                  <id>resourcesync</id>
+                  <mainClass>nl.knaw.huygens.timbuctoo.remote.rs.ResourceSyncService</mainClass>
+                </program>
+              </programs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
-  </build>
 
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh</artifactId>
+        <version>3.4.3</version>
+      </extension>
+    </extensions>
+  </build>
 </project>

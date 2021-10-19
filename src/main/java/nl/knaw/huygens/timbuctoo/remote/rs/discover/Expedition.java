@@ -38,9 +38,6 @@ import java.util.stream.Collectors;
  * http://www.openarchives.org/rs/1.0/resourcesync#Discovery</a>
  */
 public class Expedition {
-
-  private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(Expedition.class);
-
   private static final String WELL_KNOWN_PATH = "/.well-known/resourcesync";
   private static final String ROBOTS_TXT = "/robots.txt";
   private final CloseableHttpClient httpClient;
@@ -104,7 +101,7 @@ public class Expedition {
     List<ResultIndex> indexes = explore(url, authString);
 
     ResultIndex resultIndex = new ResultIndex();
-    indexes.forEach(ri -> resultIndex.merge(ri));
+    indexes.forEach(resultIndex::merge);
 
     return resultIndex;
   }

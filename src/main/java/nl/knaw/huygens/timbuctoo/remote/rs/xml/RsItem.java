@@ -12,14 +12,13 @@ import java.util.Optional;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class RsItem<T extends RsItem> {
-
   private String loc;
   private ZonedDateTime lastmod;
   private String changefreq;
   @XmlElement(name = "md", namespace = "http://www.openarchives.org/rs/terms/")
   private RsMd rsMd;
   @XmlElement(name = "ln", namespace = "http://www.openarchives.org/rs/terms/")
-  private List<RsLn> rsLnList = new ArrayList<>();
+  private final List<RsLn> rsLnList = new ArrayList<>();
 
   public String getLoc() {
     return loc;
@@ -82,5 +81,4 @@ public abstract class RsItem<T extends RsItem> {
     }
     return null;
   }
-
 }

@@ -9,7 +9,6 @@ import nl.knaw.huygens.timbuctoo.remote.rs.xml.RsMd;
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.RsRoot;
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.Sitemapindex;
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.Urlset;
-import nl.knaw.huygens.timbuctoo.util.LambdaExceptionUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -41,12 +40,11 @@ import java.util.Optional;
  * </p>
  */
 public class RsExplorer extends AbstractUriExplorer {
-
   private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(RsExplorer.class);
 
   private final ResourceSyncContext rsContext;
 
-  private LambdaExceptionUtil.Function_WithExceptions<HttpResponse, RsRoot, Exception> sitemapConverter;
+  private ApplyException<HttpResponse, RsRoot, Exception> sitemapConverter;
 
   private boolean followParentLinks = true;
   private boolean followIndexLinks = true;
@@ -87,7 +85,7 @@ public class RsExplorer extends AbstractUriExplorer {
   }
 
   public RsExplorer withSitemapConverter(
-    LambdaExceptionUtil.Function_WithExceptions<HttpResponse, RsRoot, Exception> converter) {
+    ApplyException<HttpResponse, RsRoot, Exception> converter) {
     this.sitemapConverter = converter;
     return this;
   }
@@ -275,23 +273,22 @@ public class RsExplorer extends AbstractUriExplorer {
     return rsContext;
   }
 
-  private LambdaExceptionUtil.Function_WithExceptions<HttpResponse, RsRoot, Exception> rsConverter = (response) -> {
+  private final ApplyException<HttpResponse, RsRoot, Exception> rsConverter = (response) -> {
     InputStream inStream = response.getEntity().getContent();
     return new RsBuilder(this.getRsContext()).setInputStream(inStream).build().orElse(null);
   };
 
-  private LambdaExceptionUtil.Function_WithExceptions<HttpResponse, RsRoot, Exception> getSitemapConverter() {
+  private ApplyException<HttpResponse, RsRoot, Exception> getSitemapConverter() {
     if (sitemapConverter == null) {
       sitemapConverter = rsConverter;
     }
     return sitemapConverter;
   }
 
-  private LambdaExceptionUtil.Function_WithExceptions<HttpResponse, Description, Exception> descriptionReader =
+  private final ApplyException<HttpResponse, Description, Exception> descriptionReader =
     (response) -> {
       InputStream inStream = response.getEntity().getContent();
       String encoding = AbstractUriExplorer.getCharset(response);
       return new Description(IOUtils.toString(inStream, encoding));
     };
-
 }

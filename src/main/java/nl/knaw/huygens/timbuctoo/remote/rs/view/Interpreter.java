@@ -4,11 +4,7 @@ import nl.knaw.huygens.timbuctoo.remote.rs.xml.RsItem;
 
 import java.util.function.Function;
 
-/**
- *
- */
 public class Interpreter {
-
   private Function<RsItem<?>, String> itemNameInterpreter = Interpreters.locItemNameInterpreter;
   private Function<Throwable, String> errorInterpreter = Interpreters.messageErrorInterpreter;
 

@@ -1,6 +1,5 @@
 package nl.knaw.huygens.timbuctoo.remote.rs.xml;
 
-
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -21,7 +20,6 @@ import java.net.URL;
 import java.util.Optional;
 
 public class RsBuilder {
-
   private final ResourceSyncContext rsContext;
 
   private File file;

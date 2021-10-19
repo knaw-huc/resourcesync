@@ -1,24 +1,20 @@
 package nl.knaw.huygens.timbuctoo.remote.rs.discover;
 
-
-import nl.knaw.huygens.timbuctoo.util.LambdaExceptionUtil.Function_WithExceptions;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.slf4j.Logger;
 
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Execute a request against a server.
  */
 public abstract class AbstractUriExplorer {
-
-  private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(AbstractUriExplorer.class);
   private final CloseableHttpClient httpClient;
   private URI currentUri;
 
@@ -29,7 +25,7 @@ public abstract class AbstractUriExplorer {
   static String getCharset(HttpResponse response) {
     ContentType contentType = ContentType.getOrDefault(response.getEntity());
     Charset charset = contentType.getCharset();
-    return charset == null ? "UTF-8" : charset.name();
+    return charset == null ? StandardCharsets.UTF_8.name() : charset.name();
   }
 
   public abstract Result<?> explore(URI uri, ResultIndex index, String authString);
@@ -42,7 +38,7 @@ public abstract class AbstractUriExplorer {
     return currentUri;
   }
 
-  public <T> Result<T> execute(URI uri, Function_WithExceptions<HttpResponse, T, ?> func, String authString) {
+  public <T> Result<T> execute(URI uri, ApplyException<HttpResponse, T, ?> func, String authString) {
     currentUri = uri;
     Result<T> result = new Result<T>(uri);
     HttpGet request = new HttpGet(uri);

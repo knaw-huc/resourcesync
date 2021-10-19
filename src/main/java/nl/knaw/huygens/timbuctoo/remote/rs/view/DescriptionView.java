@@ -11,14 +11,10 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-/**
- * Created on 2017-11-01 10:35.
- */
 public class DescriptionView {
-
   private JsonNode content;
   private String rawContent;
   private ErrorView error;
@@ -65,7 +61,8 @@ public class DescriptionView {
 
   private void createDescriptionNode(Description description, RDFFormat parseFormat, Interpreter interpreter) {
     try {
-      Model model = Rio.parse(IOUtils.toInputStream(description.getRawContent()), "", parseFormat);
+      Model model = Rio.parse(IOUtils.toInputStream(description.getRawContent(), StandardCharsets.UTF_8),
+              "", parseFormat);
       ByteArrayOutputStream out = new ByteArrayOutputStream();
       Rio.write(model, out, RDFFormat.JSONLD);
       ObjectMapper mapper = new ObjectMapper();

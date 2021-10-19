@@ -9,7 +9,6 @@ package nl.knaw.huygens.timbuctoo.remote.rs.xml;
  *   http://www.openarchives.org/rs/1.0/resourcesync#DocumentFormats</a>
  */
 public enum Capability {
-
   DESCRIPTION("description", 3),
   CAPABILITYLIST("capabilitylist", 2),
   RESOURCELIST("resourcelist", 1),

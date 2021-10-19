@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlRegistry;
 
 @XmlRegistry
 public class ObjectFactory {
-
   public ObjectFactory() {}
 
   public Urlset createUrlset() {
@@ -15,7 +14,7 @@ public class ObjectFactory {
 
   @XmlElementDecl(namespace = "http://www.sitemaps.org/schemas/sitemap/0.9", name = "urlset")
   public JAXBElement<Urlset> createUrlset(Urlset value) {
-    return new JAXBElement<Urlset>(Urlset.QNAME, Urlset.class, null, value);
+    return new JAXBElement<>(Urlset.QNAME, Urlset.class, null, value);
   }
 
   public Sitemapindex createSitemapIndex() {
@@ -24,6 +23,6 @@ public class ObjectFactory {
 
   @XmlElementDecl(namespace = "http://www.sitemaps.org/schemas/sitemap/0.9", name = "sitemapindex")
   public JAXBElement<Sitemapindex> createSitemapIndex(Sitemapindex value) {
-    return new JAXBElement<Sitemapindex>(Sitemapindex.QNAME, Sitemapindex.class, null, value);
+    return new JAXBElement<>(Sitemapindex.QNAME, Sitemapindex.class, null, value);
   }
 }

@@ -1,10 +1,8 @@
 package nl.knaw.huygens.timbuctoo.remote.rs.discover;
 
-
 import java.net.URI;
 
 public class RemoteException extends Exception {
-
   private int statusCode;
   private URI uri;
 

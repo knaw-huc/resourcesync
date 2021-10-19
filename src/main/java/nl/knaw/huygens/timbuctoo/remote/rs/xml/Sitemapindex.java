@@ -9,14 +9,12 @@ import java.util.List;
 
 @XmlRootElement(
   namespace = "http://www.sitemaps.org/schemas/sitemap/0.9",
-  name = "sitemapindex"
-  )
+  name = "sitemapindex")
 public class Sitemapindex extends RsRoot<Sitemapindex, SitemapItem> {
-
   public static final QName QNAME = new QName("http://www.sitemaps.org/schemas/sitemap/0.9", "sitemapindex");
 
   @XmlElement(name = "sitemap", namespace = "http://www.sitemaps.org/schemas/sitemap/0.9")
-  private List<SitemapItem> siteMapList = new ArrayList<>();
+  private final List<SitemapItem> siteMapList = new ArrayList<>();
 
   protected Sitemapindex() {}
 
@@ -27,5 +25,4 @@ public class Sitemapindex extends RsRoot<Sitemapindex, SitemapItem> {
   public List<SitemapItem> getItemList() {
     return siteMapList;
   }
-
 }

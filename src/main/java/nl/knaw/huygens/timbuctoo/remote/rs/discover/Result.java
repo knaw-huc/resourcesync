@@ -1,6 +1,5 @@
 package nl.knaw.huygens.timbuctoo.remote.rs.discover;
 
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,16 +13,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Result<T> implements Consumer<T> {
-
-  private URI uri;
+  private final URI uri;
   private int ordinal;
   private int statusCode;
   private T content;
-  private List<Throwable> errors = new ArrayList<>();
-  private Map<URI, Result<?>> parents = new TreeMap<>();
-  private Map<URI, Result<?>> children = new TreeMap<>();
+  private final List<Throwable> errors = new ArrayList<>();
+  private final Map<URI, Result<?>> parents = new TreeMap<>();
+  private final Map<URI, Result<?>> children = new TreeMap<>();
   private Result<Description> descriptionResult;
-  private Set<String> invalidUris = new TreeSet<>();
+  private final Set<String> invalidUris = new TreeSet<>();
 
   public Result(URI uri) {
     this.uri = uri;
@@ -124,5 +122,4 @@ public class Result<T> implements Consumer<T> {
     }
     this.descriptionResult = descriptionResult;
   }
-
 }

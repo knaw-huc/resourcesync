@@ -11,11 +11,9 @@ import java.util.Optional;
 
 @XmlType(name = "ln",
   namespace = "http://www.openarchives.org/rs/terms/",
-  propOrder = { "rel", "href" }
-  )
+  propOrder = { "rel", "href" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RsLn {
-
   @XmlAttribute() private String rel;
   @XmlAttribute() private String href;
 

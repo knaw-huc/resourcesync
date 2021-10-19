@@ -11,11 +11,10 @@ import java.util.Optional;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class RsRoot<T extends RsRoot, C extends RsItem> {
-
   @XmlElement(name = "md", namespace = "http://www.openarchives.org/rs/terms/")
   private RsMd rsMd;
   @XmlElement(name = "ln", namespace = "http://www.openarchives.org/rs/terms/")
-  private List<RsLn> linkList = new ArrayList<>();
+  private final List<RsLn> linkList = new ArrayList<>();
 
   public RsMd getMetadata() {
     return rsMd;
@@ -53,10 +52,7 @@ public abstract class RsRoot<T extends RsRoot, C extends RsItem> {
 
   public String getLinkHref(String rel) {
     Optional<RsLn> maybeRsLn = getLink(rel);
-    if (maybeRsLn.isPresent()) {
-      return maybeRsLn.get().getHref();
-    }
-    return null;
+    return maybeRsLn.map(RsLn::getHref).orElse(null);
   }
 
   public int getLevel() {
@@ -67,8 +63,7 @@ public abstract class RsRoot<T extends RsRoot, C extends RsItem> {
     try {
       return Optional.of(Capability.forString(rsMd.getCapability().orElse("")));
     } catch (IllegalArgumentException e) {
-      return Optional.ofNullable(null);
+      return Optional.empty();
     }
   }
-
 }

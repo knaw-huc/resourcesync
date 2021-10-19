@@ -7,7 +7,6 @@ package nl.knaw.huygens.timbuctoo.remote.rs.discover;
  *   http://www.openarchives.org/rs/1.0/resourcesync</a>
  */
 public class RemoteResourceSyncFrameworkException extends Exception {
-
   public RemoteResourceSyncFrameworkException() {
   }
 
@@ -22,5 +21,4 @@ public class RemoteResourceSyncFrameworkException extends Exception {
   public RemoteResourceSyncFrameworkException(Throwable cause) {
     super(cause);
   }
-
 }

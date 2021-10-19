@@ -2,7 +2,6 @@ package nl.knaw.huygens.timbuctoo.remote.rs.download;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.RsLn;
-import org.slf4j.LoggerFactory;
 
 public class UrlItem {
   private String loc;

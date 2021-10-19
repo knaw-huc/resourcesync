@@ -15,8 +15,7 @@ import java.util.stream.Collectors;
  * Data summarizations on a ResultIndex.
  */
 public class ResultIndexPivot {
-
-  private ResultIndex resultIndex;
+  private final ResultIndex resultIndex;
 
   public ResultIndexPivot(ResultIndex resultIndex) {
     this.resultIndex = resultIndex;

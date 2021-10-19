@@ -9,11 +9,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 @XmlType(name = "md",
-  namespace = "http://www.openarchives.org/rs/terms/"
-  )
+  namespace = "http://www.openarchives.org/rs/terms/")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RsMd {
-
   @XmlAttribute() private String capability;
 
   @XmlAttribute() private ZonedDateTime at;
