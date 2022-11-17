@@ -210,15 +210,16 @@ public class ResourceSyncFileLoader {
   }
 
   static class RemoteFileRetriever {
-    private final HttpClient httpClient;
+    private static final Logger LOG = getLogger(RemoteFileRetriever.class);
+    private final CloseableHttpClient httpClient;
     private final int timeout;
 
-    private RemoteFileRetriever(HttpClient httpClient) {
+    private RemoteFileRetriever(CloseableHttpClient httpClient) {
       this.httpClient = httpClient;
       this.timeout = 0;
     }
 
-    private RemoteFileRetriever(HttpClient httpClient, int timeout) {
+    private RemoteFileRetriever(CloseableHttpClient httpClient, int timeout) {
       this.httpClient = httpClient;
       this.timeout = timeout;
     }
@@ -235,7 +236,9 @@ public class ResourceSyncFileLoader {
         httpGet.addHeader("Authorization", authString);
       }
 
+      LOG.info("Calling " + url);
       HttpResponse httpResponse = httpClient.execute(httpGet);
+      LOG.info("Got response from " + url);
       if (httpResponse.getStatusLine().getStatusCode() == 200) {
         InputStream content = httpResponse.getEntity().getContent();
         if (content != null) {

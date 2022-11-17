@@ -38,16 +38,22 @@ public class ResourceSyncImport {
 
     Iterator<RemoteFile> files = filesToImport.iterator();
 
-    LOG.info("Found files '{}'", files.hasNext());
+    // Get total number of files found
+    int numOfFiles = filesToImport.size();
+    LOG.info("Found '{}' files to be processed", numOfFiles);
 
     if (!files.hasNext()) {
       LOG.error("No supported files available for import.");
       return;
     }
 
+    int fileCounter = 0;
     try {
       while (files.hasNext()) {
+        fileCounter++;
         RemoteFile file = files.next();
+        LOG.info("Processing file {} out of {}, location: {}  ", fileCounter, numOfFiles, file.getUrl());
+
         Future<?> fileFuture = withFile.withFile(
             file.getData().get(), file.getUrl(), file.getMimeType(), file.getMetadata().getDateTime());
 
