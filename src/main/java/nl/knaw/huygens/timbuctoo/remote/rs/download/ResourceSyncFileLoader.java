@@ -11,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -226,6 +227,7 @@ public class ResourceSyncFileLoader {
 
     public InputStream getFile(String url, String authString)
       throws CantRetrieveFileException, IOException {
+//      CloseableHttpClient httpClient = HttpClients.createDefault();
       HttpGet httpGet = new HttpGet(url);
 
       // Timeout time is set to 100 seconds to prevent socket timeout during changelist import
