@@ -11,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -210,21 +211,23 @@ public class ResourceSyncFileLoader {
   }
 
   static class RemoteFileRetriever {
-    private final HttpClient httpClient;
+    private static final Logger LOG = getLogger(RemoteFileRetriever.class);
+    private final CloseableHttpClient httpClient;
     private final int timeout;
 
-    private RemoteFileRetriever(HttpClient httpClient) {
+    private RemoteFileRetriever(CloseableHttpClient httpClient) {
       this.httpClient = httpClient;
       this.timeout = 0;
     }
 
-    private RemoteFileRetriever(HttpClient httpClient, int timeout) {
+    private RemoteFileRetriever(CloseableHttpClient httpClient, int timeout) {
       this.httpClient = httpClient;
       this.timeout = timeout;
     }
 
     public InputStream getFile(String url, String authString)
       throws CantRetrieveFileException, IOException {
+      CloseableHttpClient httpClient = HttpClients.createDefault();
       HttpGet httpGet = new HttpGet(url);
 
       // Timeout time is set to 100 seconds to prevent socket timeout during changelist import
@@ -235,7 +238,9 @@ public class ResourceSyncFileLoader {
         httpGet.addHeader("Authorization", authString);
       }
 
+      LOG.info("Calling " + url);
       HttpResponse httpResponse = httpClient.execute(httpGet);
+      LOG.info("Got response from " + url);
       if (httpResponse.getStatusLine().getStatusCode() == 200) {
         InputStream content = httpResponse.getEntity().getContent();
         if (content != null) {
