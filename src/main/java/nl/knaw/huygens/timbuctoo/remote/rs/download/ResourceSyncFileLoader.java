@@ -227,7 +227,7 @@ public class ResourceSyncFileLoader {
 
     public InputStream getFile(String url, String authString)
       throws CantRetrieveFileException, IOException {
-//      CloseableHttpClient httpClient = HttpClients.createDefault();
+      CloseableHttpClient httpClient = HttpClients.createDefault();
       HttpGet httpGet = new HttpGet(url);
 
       // Timeout time is set to 100 seconds to prevent socket timeout during changelist import
