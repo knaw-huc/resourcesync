@@ -8,13 +8,14 @@ import nl.knaw.huygens.timbuctoo.remote.rs.download.exceptions.CantRetrieveFileE
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.Capability;
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.RsLn;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.routing.RoutingSupport;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpException;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -227,31 +229,32 @@ public class ResourceSyncFileLoader {
 
     public InputStream getFile(String url, String authString)
       throws CantRetrieveFileException, IOException {
-      CloseableHttpClient httpClient = HttpClients.createDefault();
       HttpGet httpGet = new HttpGet(url);
 
       // Timeout time is set to 100 seconds to prevent socket timeout during changelist import
       if (timeout > 0) {
-        httpGet.setConfig(RequestConfig.custom().setSocketTimeout(timeout).build());
+        httpGet.setConfig(RequestConfig.custom().setResponseTimeout(timeout, TimeUnit.MILLISECONDS).build());
       }
       if (authString != null) {
         httpGet.addHeader("Authorization", authString);
       }
 
       LOG.info("Calling " + url);
-      HttpResponse httpResponse = httpClient.execute(httpGet);
-      LOG.info("Got response from " + url);
-      if (httpResponse.getStatusLine().getStatusCode() == 200) {
-        InputStream content = httpResponse.getEntity().getContent();
-        if (content != null) {
-          return maybeDecompress(content);
-        } else {
-          return new ByteArrayInputStream(new byte[0]);
+      try (ClassicHttpResponse httpResponse =
+                   httpClient.executeOpen(RoutingSupport.determineHost(httpGet), httpGet, null)) {
+        LOG.info("Got response from " + url);
+        if (httpResponse.getCode() == 200) {
+          InputStream content = httpResponse.getEntity().getContent();
+          if (content != null) {
+            return maybeDecompress(content);
+          } else {
+            return new ByteArrayInputStream(new byte[0]);
+          }
         }
+        throw new CantRetrieveFileException(httpResponse.getCode(), httpResponse.getReasonPhrase());
+      } catch (HttpException ex) {
+        throw new ClientProtocolException(ex);
       }
-
-      throw new CantRetrieveFileException(httpResponse.getStatusLine().getStatusCode(),
-        httpResponse.getStatusLine().getReasonPhrase());
     }
   }
 }

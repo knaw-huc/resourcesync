@@ -1,10 +1,9 @@
 package nl.knaw.huygens.timbuctoo.remote.rs.discover;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.routing.RoutingSupport;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -22,10 +21,17 @@ public abstract class AbstractUriExplorer {
     this.httpClient = httpClient;
   }
 
-  static String getCharset(HttpResponse response) {
-    ContentType contentType = ContentType.getOrDefault(response.getEntity());
-    Charset charset = contentType.getCharset();
-    return charset == null ? StandardCharsets.UTF_8.name() : charset.name();
+  static String getCharset(ClassicHttpResponse response) {
+    try {
+      String contentTypeCharset = response.getEntity().getContentType();
+      if (contentTypeCharset != null && contentTypeCharset.indexOf(';') >= 0) {
+        String charset = contentTypeCharset.substring(contentTypeCharset.indexOf(';') + 1).trim();
+        return Charset.forName(charset).name();
+      }
+      return StandardCharsets.UTF_8.name();
+    } catch (IllegalArgumentException e) {
+      return StandardCharsets.UTF_8.name();
+    }
   }
 
   public abstract Result<?> explore(URI uri, ResultIndex index, String authString);
@@ -38,18 +44,19 @@ public abstract class AbstractUriExplorer {
     return currentUri;
   }
 
-  public <T> Result<T> execute(URI uri, ApplyException<HttpResponse, T, ?> func, String authString) {
+  public <T> Result<T> execute(URI uri, ApplyException<ClassicHttpResponse, T, ?> func, String authString) {
     currentUri = uri;
     Result<T> result = new Result<T>(uri);
     HttpGet request = new HttpGet(uri);
     if (authString != null) {
       request.addHeader("Authorization", authString);
     }
-    try (CloseableHttpResponse response = httpClient.execute(request)) {
-      int statusCode = response.getStatusLine().getStatusCode();
+    try (ClassicHttpResponse response =
+                 httpClient.executeOpen(RoutingSupport.determineHost(request), request, null)) {
+      int statusCode = response.getCode();
       result.setStatusCode(statusCode);
       if (!Response.Status.Family.SUCCESSFUL.equals(Response.Status.Family.familyOf(statusCode))) {
-        result.addError(new RemoteException(statusCode, response.getStatusLine().getReasonPhrase(), uri));
+        result.addError(new RemoteException(statusCode, response.getReasonPhrase(), uri));
       } else {
         result.accept(func.apply(response));
       }

@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>nl.knaw.huc</groupId>
   <artifactId>resourcesync</artifactId>
-  <version>2.2.0</version>
+  <version>2.2.1</version>
 
   <name>ResourceSync</name>
   <description>ResourceSync client library</description>
@@ -64,18 +64,10 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-    <!-- don't generate javadoc -->
     <maven.javadoc.skip>true</maven.javadoc.skip>
-
-    <!-- test output -->
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-    <!-- version numbers -->
     <jdk.version>11</jdk.version>
-
-    <!-- code dependencies -->
-    <rdf4j.version>4.2.4</rdf4j.version>
+    <rdf4j.version>4.3.6</rdf4j.version>
     <jackson.version>2.15.0</jackson.version>
   </properties>
 
