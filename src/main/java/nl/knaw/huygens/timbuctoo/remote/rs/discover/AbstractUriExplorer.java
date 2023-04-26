@@ -1,10 +1,10 @@
 package nl.knaw.huygens.timbuctoo.remote.rs.discover;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.routing.RoutingSupport;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
 
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -22,8 +22,8 @@ public abstract class AbstractUriExplorer {
     this.httpClient = httpClient;
   }
 
-  static String getCharset(HttpResponse response) {
-    ContentType contentType = ContentType.getOrDefault(response.getEntity());
+  static String getCharset(ClassicHttpResponse response) {
+    ContentType contentType = ContentType.create(response.getEntity().getContentType());
     Charset charset = contentType.getCharset();
     return charset == null ? StandardCharsets.UTF_8.name() : charset.name();
   }
@@ -38,18 +38,19 @@ public abstract class AbstractUriExplorer {
     return currentUri;
   }
 
-  public <T> Result<T> execute(URI uri, ApplyException<HttpResponse, T, ?> func, String authString) {
+  public <T> Result<T> execute(URI uri, ApplyException<ClassicHttpResponse, T, ?> func, String authString) {
     currentUri = uri;
     Result<T> result = new Result<T>(uri);
     HttpGet request = new HttpGet(uri);
     if (authString != null) {
       request.addHeader("Authorization", authString);
     }
-    try (CloseableHttpResponse response = httpClient.execute(request)) {
-      int statusCode = response.getStatusLine().getStatusCode();
+    try (ClassicHttpResponse response =
+                 httpClient.executeOpen(RoutingSupport.determineHost(request), request, null)) {
+      int statusCode = response.getCode();
       result.setStatusCode(statusCode);
       if (!Response.Status.Family.SUCCESSFUL.equals(Response.Status.Family.familyOf(statusCode))) {
-        result.addError(new RemoteException(statusCode, response.getStatusLine().getReasonPhrase(), uri));
+        result.addError(new RemoteException(statusCode, response.getReasonPhrase(), uri));
       } else {
         result.accept(func.apply(response));
       }

@@ -8,7 +8,7 @@ import nl.knaw.huygens.timbuctoo.remote.rs.view.Interpreter;
 import nl.knaw.huygens.timbuctoo.remote.rs.view.SetListBase;
 import nl.knaw.huygens.timbuctoo.remote.rs.view.TreeBase;
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.ResourceSyncContext;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 
 import java.io.InputStream;
 import java.net.URISyntaxException;

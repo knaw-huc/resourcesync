@@ -1,7 +1,6 @@
 package nl.knaw.huygens.timbuctoo.remote.rs.view;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import nl.knaw.huygens.timbuctoo.remote.rs.discover.Description;
 import nl.knaw.huygens.timbuctoo.remote.rs.discover.Result;
 import nl.knaw.huygens.timbuctoo.remote.rs.discover.ResultIndex;
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.RsItem;

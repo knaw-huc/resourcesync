@@ -10,8 +10,8 @@ import nl.knaw.huygens.timbuctoo.remote.rs.xml.RsRoot;
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.Sitemapindex;
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.Urlset;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.slf4j.Logger;
 
 import java.io.InputStream;
@@ -44,7 +44,7 @@ public class RsExplorer extends AbstractUriExplorer {
 
   private final ResourceSyncContext rsContext;
 
-  private ApplyException<HttpResponse, RsRoot, Exception> sitemapConverter;
+  private ApplyException<ClassicHttpResponse, RsRoot, Exception> sitemapConverter;
 
   private boolean followParentLinks = true;
   private boolean followIndexLinks = true;
@@ -85,7 +85,7 @@ public class RsExplorer extends AbstractUriExplorer {
   }
 
   public RsExplorer withSitemapConverter(
-    ApplyException<HttpResponse, RsRoot, Exception> converter) {
+    ApplyException<ClassicHttpResponse, RsRoot, Exception> converter) {
     this.sitemapConverter = converter;
     return this;
   }
@@ -273,19 +273,19 @@ public class RsExplorer extends AbstractUriExplorer {
     return rsContext;
   }
 
-  private final ApplyException<HttpResponse, RsRoot, Exception> rsConverter = (response) -> {
+  private final ApplyException<ClassicHttpResponse, RsRoot, Exception> rsConverter = (response) -> {
     InputStream inStream = response.getEntity().getContent();
     return new RsBuilder(this.getRsContext()).setInputStream(inStream).build().orElse(null);
   };
 
-  private ApplyException<HttpResponse, RsRoot, Exception> getSitemapConverter() {
+  private ApplyException<ClassicHttpResponse, RsRoot, Exception> getSitemapConverter() {
     if (sitemapConverter == null) {
       sitemapConverter = rsConverter;
     }
     return sitemapConverter;
   }
 
-  private final ApplyException<HttpResponse, Description, Exception> descriptionReader =
+  private final ApplyException<ClassicHttpResponse, Description, Exception> descriptionReader =
     (response) -> {
       InputStream inStream = response.getEntity().getContent();
       String encoding = AbstractUriExplorer.getCharset(response);

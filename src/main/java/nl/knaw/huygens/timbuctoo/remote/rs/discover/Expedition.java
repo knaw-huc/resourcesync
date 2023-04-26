@@ -1,8 +1,7 @@
 package nl.knaw.huygens.timbuctoo.remote.rs.discover;
 
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.ResourceSyncContext;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.slf4j.Logger;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 
 import java.net.URI;
 import java.net.URISyntaxException;

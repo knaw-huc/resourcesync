@@ -3,9 +3,9 @@ package nl.knaw.huygens.timbuctoo.remote.rs.discover;
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.ResourceSyncContext;
 import nl.knaw.huygens.timbuctoo.remote.rs.xml.RsRoot;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -51,10 +51,10 @@ import java.util.regex.Pattern;
  */
 public class LinkExplorer extends AbstractUriExplorer {
   private final ResourceSyncContext rsContext;
-  private final ApplyException<HttpResponse, List<String>, ?> responseReader;
+  private final ApplyException<ClassicHttpResponse, List<String>, ?> responseReader;
 
   public LinkExplorer(CloseableHttpClient httpClient, ResourceSyncContext rsContext,
-                      ApplyException<HttpResponse, List<String>, ?> responseReader) {
+                      ApplyException<ClassicHttpResponse, List<String>, ?> responseReader) {
     super(httpClient);
     this.rsContext = rsContext;
     this.responseReader = responseReader;
@@ -84,7 +84,7 @@ public class LinkExplorer extends AbstractUriExplorer {
     return linkList;
   };
 
-  static ApplyException<HttpResponse, List<String>, Exception> linkReader = (response) -> {
+  static ApplyException<ClassicHttpResponse, List<String>, Exception> linkReader = (response) -> {
     // a webpage that contains a link to a Capability List in the <head> section
     // http://www.openarchives.org/rs/1.0/resourcesync#ex_9
     InputStream inStream = response.getEntity().getContent();
@@ -116,7 +116,7 @@ public class LinkExplorer extends AbstractUriExplorer {
     return uriList;
   };
 
-  static ApplyException<HttpResponse, List<String>, Exception> robotsReader = (response) -> {
+  static ApplyException<ClassicHttpResponse, List<String>, Exception> robotsReader = (response) -> {
     String text = IOUtils.toString(response.getEntity().getContent(), getCharset(response));
     Matcher match = Pattern.compile("(?m)^Sitemap: (.*?)$").matcher(text);
     List<String> uriList = new ArrayList<>();
